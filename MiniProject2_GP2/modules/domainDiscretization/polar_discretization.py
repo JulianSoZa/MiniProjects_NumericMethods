@@ -2,6 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def polar_discretization(nth, nr):
+    
+    """
+    Args:
+        nth: a
+        nr: a
+        
+    Returns:
+        t_dis: a
+        r_dis: a
+        th: a
+        r: a
+        x_s: a
+        y_s: a
+    """
+    
     r_inf = 3
     r_sup = 8
 
