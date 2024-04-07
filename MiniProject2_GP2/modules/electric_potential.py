@@ -127,13 +127,13 @@ for k in range(nk):
     i = int(k/(nth))
     
     if (i==0):
-        Er[i, j] = 0
+        Er[i, j] = -(V[num(i+1,j)] - V[num(i,j)])/(dr)
         Et[i, j] = -Eint_th(t_dis[j])/r_dis[i]
         En[i, j] = np.sqrt(Er[i, j]**2 + Et[i, j]**2)
         print(En[i, j])
         continue
     if (i==nr):
-        Er[i, j] = 0
+        Er[i, j] = -(V[num(i,j)] - V[num(i-1,j)])/(dr)
         Et[i, j] = -Eext_th(t_dis[j])/r_dis[i]
         En[i, j] = np.sqrt(Er[i, j]**2 + Et[i, j]**2)
         continue
@@ -147,7 +147,7 @@ ax2 = fig2.add_subplot()
 
 cmap_T = 'viridis'
 
-cb2 = ax2.pcolormesh(x_s, y_s, Et, shading='auto', cmap=cmap_T)
+cb2 = ax2.pcolormesh(x_s, y_s, En, shading='auto', cmap=cmap_T)
 fig.colorbar(cb2, ax=ax2)
 
 plt.tight_layout()
