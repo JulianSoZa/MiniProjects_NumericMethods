@@ -16,19 +16,23 @@ def polar_discretization(nth, nr):
         x_s: a
         y_s: a
     """
-    
     r_inf = 3
     r_sup = 8
+    
+    dth = 2*np.pi/nth
+    dr = (r_sup-r_inf)/nr
+    
+    nk = nth*(nr+1) #Numero de puntos en numeracion global
 
-    t_dis = np.linspace(0, (2*np.pi), nth)           #Discretizacion de los Angulos
-    r_dis = np.linspace(r_inf, r_sup, nr)           #Discretizacion de los radios
+    t_dis = np.linspace(0, (2*np.pi), nth+1)           #Discretizacion de los Angulos
+    r_dis = np.linspace(r_inf, r_sup, nr+1)           #Discretizacion de los radios
 
     th, r = np.meshgrid(t_dis, r_dis)            #Malla
 
     x_s = r * np.cos(th)                         #Convercion a carteciano (grafica)
     y_s = r* np.sin(th)                         #Convercion a carteciano (grafica)
     
-    return t_dis, r_dis, th, r, x_s, y_s
+    return t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk
 
 if __name__ == "__main__":
     
