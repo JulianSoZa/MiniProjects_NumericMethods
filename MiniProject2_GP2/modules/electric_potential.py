@@ -34,6 +34,8 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
         cD = alpha
         cE = alpha
         
+        #print(f'A V_{num(i,j)} + B V_{num(i+1,j)} + C V_{num(i-1,j)} + D V_{num(i,j+1)} + E V_{num(i,j-1)}')
+        
         #Frontera:
         if(i == 0):
             data.append(1)
@@ -80,6 +82,8 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
         j = k%(nth)
         i = int(k/(nth))
         Vrt[i,j] = V[k]
+        
+    # Grafica -----------------
 
     fig = plt.figure()
     ax = fig.add_subplot()
@@ -90,5 +94,15 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     fig.colorbar(cb1, ax=ax)
 
     plt.tight_layout()
+    
+    # Grafica 2 ------------
+    
+    r, t = np.meshgrid(r_dis, t_dis)
+    
+    fig3, ax3 = plt.subplots(subplot_kw={'projection': 'polar'})
+
+    c = ax3.pcolormesh(t, r, Vrt.transpose(), shading='auto', cmap='viridis')
+
+    fig3.colorbar(c, ax=ax3)
     
     return V, num
