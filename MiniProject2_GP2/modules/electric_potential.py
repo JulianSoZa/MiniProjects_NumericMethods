@@ -152,7 +152,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 if ((y_dis[j]<0)&(x_dis[i]>0)):
                     b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
                 
-                else:
+                if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
                 #print(k)
                 continue
@@ -167,7 +167,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 if ((y_dis[j]<0)&(x_dis[i]>0)):
                     b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
                 
-                else:
+                if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_int(np.arctan2(y_dis[j],x_dis[i]))
                 #print(k)
                 continue
@@ -188,7 +188,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 if ((y_dis[j]<0)&(x_dis[i]>0)):
                     b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
                 
-                else:
+                if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
                 #print(k)
                 continue
@@ -204,7 +204,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 if ((y_dis[j]<0)&(x_dis[i]>0)):
                     b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
                 
-                else:
+                if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_int(np.arctan2(y_dis[j],x_dis[i]))
                     
                 continue
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     r_sup = 8
 
     nth = 400
-    nr = 400
+    nr = 200
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
     electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
