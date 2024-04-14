@@ -172,6 +172,43 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 #print(k)
                 continue
             
+            radio1 = np.sqrt(x_dis[i+1]**2 + y_dis[j]**2)
+            radio2 = np.sqrt(x_dis[i]**2 + y_dis[j-1]**2)
+            radio3 = np.sqrt(x_dis[i]**2 + y_dis[j+1]**2)
+            radio4 = np.sqrt(x_dis[i-1]**2 + y_dis[j]**2)
+            
+            if((radio1>=8)&(radio2>=8)) |   ((radio1>=8)&(radio3>=8))   |   ((radio4>=8)&(radio3>=8))   |   ((radio4>=8)&(radio2>=8)):
+                #print(k)
+                data.append(1)
+                row.append(k)
+                col.append(k)
+                if ((y_dis[j]<0)&(x_dis[i]<0)):
+                    b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+np.pi)
+                
+                if ((y_dis[j]<0)&(x_dis[i]>0)):
+                    b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
+                
+                else:
+                    b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
+                #print(k)
+                continue
+            
+            if((radio1<=3)&(radio2<=3)) |   ((radio1<=3)&(radio3<=3))   |   ((radio4<=3)&(radio3<=3))   |   ((radio4<=3)&(radio2<=3)):
+                #print(k)
+                data.append(1)
+                row.append(k)
+                col.append(k)
+                if ((y_dis[j]<0)&(x_dis[i]<0)):
+                    b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+np.pi)
+                    
+                if ((y_dis[j]<0)&(x_dis[i]>0)):
+                    b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
+                
+                else:
+                    b[k] = V_int(np.arctan2(y_dis[j],x_dis[i]))
+                    
+                continue
+            
             data.append(cA)
             row.append(k)
             col.append(k)
@@ -229,8 +266,8 @@ if __name__ == "__main__":
     from domainDiscretization import polar as doPolar
 
     
-    nx = 100
-    ny = 100
+    nx = 400
+    ny = 400
     
     r_inf = 3
     r_sup = 8
