@@ -106,3 +106,146 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     fig3.colorbar(c, ax=ax3)
     
     return V, num
+
+def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos):
+    #print('Puntos: \n', puntos)
+    data = []
+    row = []
+    col = []
+    
+    nk = nx*ny
+
+    b = np.zeros(nk)
+    
+    V_ext = lambda y: np.exp(-0.2*(y-3*np.pi/4)**2) * (np.sin(5*(y**2)/(np.pi)))**2
+    V_int = lambda y: np.sin(2*y)
+
+    num = lambda x,y: nx*y+x
+
+    alpha = dely/delx
+    
+    cA = -2*(1+alpha**2)
+    cB = alpha**2
+    cC = alpha**2
+    cD = 1
+    cE = 1
+    
+    for k in range(nk):
+        i = k%(nx)
+        j = int(k/(nx))
+        
+        #print(f'A V_{num(i,j)} + B V_{num(i+1,j)} + C V_{num(i-1,j)} + D V_{num(i,j+1)} + E V_{num(i,j-1)}')
+        #Frontera:
+        #print(k)
+        #print(i,j)
+        
+        radio = np.sqrt(x_dis[i]**2 + y_dis[j]**2)
+        
+        if k in puntos:
+            if(radio >= r_sup):
+                data.append(1)
+                row.append(k)
+                col.append(k)
+                if ((y_dis[j]<0)&(x_dis[i]<0)):
+                    b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+np.pi)
+                
+                if ((y_dis[j]<0)&(x_dis[i]>0)):
+                    b[k] = V_ext(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
+                
+                else:
+                    b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
+                #print(k)
+                continue
+        
+            if(radio <= r_inf):
+                data.append(1)
+                row.append(k)
+                col.append(k)
+                if ((y_dis[j]<0)&(x_dis[i]<0)):
+                    b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+np.pi)
+                    
+                if ((y_dis[j]<0)&(x_dis[i]>0)):
+                    b[k] = V_int(np.arctan(y_dis[j]/x_dis[i])+2*np.pi)
+                
+                else:
+                    b[k] = V_int(np.arctan2(y_dis[j],x_dis[i]))
+                #print(k)
+                continue
+            
+            data.append(cA)
+            row.append(k)
+            col.append(k)
+            
+            data.append(cB)
+            row.append(k)
+            col.append(int(num(i+1,j)))
+            
+            data.append(cC)
+            row.append(k)
+            col.append(int(num(i-1,j)))
+            
+            data.append(cD)
+            row.append(k)
+            col.append(int(num(i,j+1)))
+            
+            data.append(cE)
+            row.append(k)
+            col.append(int(num(i,j-1)))
+        else:
+            data.append(1)
+            row.append(k)
+            col.append(k)
+        
+    A = csr_matrix((data, (row, col)))
+    
+    V = spsolve(A,b)
+    
+    Vrt = np.zeros((nx, ny))
+        
+    for k in puntos:
+        i = k%(nx)
+        j = int(k/(nx))
+        Vrt[i,j] = V[k]
+        
+    # Grafica -----------------
+
+    fig4 = plt.figure()
+    ax4 = fig4.add_subplot()
+
+    cmap_T = 'viridis'
+    
+    x_s, y_s = np.meshgrid(x_dis, y_dis) 
+
+    cb1 = ax4.pcolormesh(y_s, x_s, Vrt, shading='auto', cmap=cmap_T)
+    fig4.colorbar(cb1, ax=ax4)
+
+    plt.tight_layout()
+    
+    return
+
+if __name__ == "__main__":
+    from domainDiscretization import cartesian as doCartesian
+    import matplotlib.pyplot as plt
+    from domainDiscretization import polar as doPolar
+
+    
+    nx = 100
+    ny = 100
+    
+    r_inf = 3
+    r_sup = 8
+    
+    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    
+    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices)
+    
+    r_inf = 3
+    r_sup = 8
+
+    nth = 400
+    nr = 400
+    t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
+
+    electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+
+    plt.show()

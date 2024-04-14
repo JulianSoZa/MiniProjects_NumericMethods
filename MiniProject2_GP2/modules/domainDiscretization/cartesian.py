@@ -8,6 +8,9 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     y_new = []
     elemento = []
     P_totales = []
+    
+    elementosIndices = []
+    puntosIndices = []
 
     puntos = []
     puntos2 = []
@@ -34,10 +37,24 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
             D = [P_totales[i+nx][0], P_totales[i+nx][1]]
             elemento.append([A,B,C,D])
             puntos.extend([A,B,C,D])
+            
+            n1 = i
+            n2 = i+1
+            n3 = i+1+nx
+            n4 = i+nx
+            elementosIndices.append([n1, n2, n3, n4])
+            puntosIndices.append(n1)
+            puntosIndices.append(n2)
+            puntosIndices.append(n3)
+            puntosIndices.append(n4)
+            
+    puntosIndices = np.unique(puntosIndices)
+    #print(puntosIndices)
+            
     puntos = list(OrderedDict.fromkeys(map(tuple, puntos)))
     puntos.sort()
     
-    return elemento, puntos
+    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices
     
 if __name__ == "__main__":
     nx = 30
