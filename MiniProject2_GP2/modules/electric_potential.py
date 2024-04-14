@@ -177,7 +177,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
             radio3 = np.sqrt(x_dis[i]**2 + y_dis[j+1]**2)
             radio4 = np.sqrt(x_dis[i-1]**2 + y_dis[j]**2)
             
-            if((radio1>=8)&(radio2>=8)) |   ((radio1>=8)&(radio3>=8))   |   ((radio4>=8)&(radio3>=8))   |   ((radio4>=8)&(radio2>=8)):
+            if((radio1>=r_sup)&(radio2>=r_sup)) |   ((radio1>=r_sup)&(radio3>=r_sup))   |   ((radio4>=r_sup)&(radio3>=r_sup))   |   ((radio4>=r_sup)&(radio2>=r_sup)):
                 #print(k)
                 data.append(1)
                 row.append(k)
@@ -193,7 +193,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 #print(k)
                 continue
             
-            if((radio1<=3)&(radio2<=3)) |   ((radio1<=3)&(radio3<=3))   |   ((radio4<=3)&(radio3<=3))   |   ((radio4<=3)&(radio2<=3)):
+            if((radio1<=r_inf)&(radio2<=r_inf)) |   ((radio1<=r_inf)&(radio3<=r_inf))   |   ((radio4<=r_inf)&(radio3<=r_inf))   |   ((radio4<=r_inf)&(radio2<=r_inf)):
                 #print(k)
                 data.append(1)
                 row.append(k)
@@ -258,7 +258,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
 
     plt.tight_layout()
     
-    return
+    return V, x_s, y_s
 
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian
