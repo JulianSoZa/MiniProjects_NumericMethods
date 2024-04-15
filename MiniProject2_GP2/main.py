@@ -7,7 +7,7 @@ nx = 10
 ny = 20
 r_inf = 3
 r_sup = 8
-elemento, puntos = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+#elemento, puntos = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
 
 nth = 400
 nr = 400

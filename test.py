@@ -1,111 +1,76 @@
+from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import spsolve
+from matplotlib.patches import Polygon 
 
-nx = 6 #multiplo de 4
-ny = 6
+nx = 80
+ny = 80
 
-dx = 8/nx
-dy = 6/ny
+r_inf = 3
+r_sup = 8
 
-vt =  2
-vb =  -1
+x_new = []
+y_new = []
+elemento = []
+P_totales = []
 
-data = []
-row = []
-col = []
+puntos = []
+puntos2 = []
 
-ia = int(2/dx)
-ib = int(6/dx)
+x_dis = np.linspace(-r_sup, r_sup, nx)           #Discretizacion del eje X
+y_dis = np.linspace(-r_sup, r_sup, ny)           #Discretizacion del eje Y 
+delx = np.abs(x_dis[0] - x_dis[1])               #Paso de x
+dely = np.abs(y_dis[0] - y_dis[1])               #paso de y 
 
-jt = int(4/dy)
-jb = int(2/dy)
+print('Delta X:',delx)
+print(f'Delta Y: {dely} \n')
 
-nk = (nx + 1)*(ny + 1)
-b = np.zeros(nk)
 
-alpha = dy/dx
-for k in range(nk):
-    i = k%(nx+1)
-    j = int(k/(nx+1))
-    
-    ### Fronteras superior o inferior
-    if j==0 or j==ny:
-        data.append(1)
-        row.append(k)
-        col.append(k)
-        continue
-    
-    ### Fronteras laterales
-    if i==0 or i==nx:
-        data.append(1)
-        row.append(k)
-        col.append(k)
-        continue
-    
-    ### Plato superior del capacitor
-    if j==jt and (ia <= i <= ib):
-        data.append(1)
-        row.append(k)
-        col.append(k)
-        b[k] = vt
-        continue
 
-    ### Plato inferior del capacitor
-    if j==jb and (ia <= i <= ib):
-        data.append(1)
-        row.append(k)
-        col.append(k)
-        b[k] = vb
-        continue
-    
-    ### Derecha o izquierda
-    J = j
-    for di in [-1, 1]:
-        I = i + di
-        K = (nx+1)*J + I
-        data.append( alpha**2)
-        row.append(k)
-        col.append(K)
+for i in range(ny):
+    for j in range(nx):
+        P_totales.append([x_dis[j], y_dis[i]])
+
+
+for i in range(len(P_totales)-nx-1):
+    if ( (i+1)%(nx) != 0 and r_inf<=np.sqrt((((P_totales[i][0]+P_totales[i+1][0])/2)**2) + (((P_totales[i][1] + P_totales[i+nx][1])/2)**2))<=r_sup):
         
-    ### Arriba o abajo
-    I = i
-    for dj in [-1, 1]:
-        J = j + dj
-        K = (nx+1)*J + I
-        data.append(1)
-        row.append(k)
-        col.append(K)
-        
-    ### Central
-    # val = -2*( dx**2 + dy**2 )
-    val = -2*( 1 + alpha**2 )
-    data.append( val )
-    row.append(k)
-    col.append(k)
-    
-A = csr_matrix((data, (row, col)), shape=(nk, nk))
-V = spsolve(A,b)
+        A = [P_totales[i][0], P_totales[i][1]]
+        B = [P_totales[i+1][0], P_totales[i+1][1]]
+        C = [P_totales[i+1+nx][0], P_totales[i+1+nx][1]]
+        D = [P_totales[i+nx][0], P_totales[i+nx][1]]
+        elemento.append([A,B,C,D])
+        puntos.extend([A,B,C,D])
+puntos = list(OrderedDict.fromkeys(map(tuple, puntos)))
+puntos.sort()
 
-# Convertir la matriz densa a formato de diccionario, obtener un array de coordenadas xy y un array de valores
-mtrx_dict = A.todok()
-xy = np.array(list(mtrx_dict.keys()))
-vals = np.array(list(mtrx_dict.values()))
 
-fig, ax = plt.subplots()
-# Crear un gráfico de dispersión
-ax.scatter(xy[:,0], xy[:,1], s=20, c=vals)
-# Establecer los ticks mayores cada 2 unidades y los ticks menores cada 0.5 unidades
-ax.set_xticks(np.arange(0, nk, 1))
-ax.set_yticks(np.arange(0, nk, 1))
 
-# Habilitar el grid para los ticks mayores y menores
-ax.grid(which='both')
+ 
 
-# Establecer el estilo del grid para los ticks mayores
-ax.grid(which='major', linewidth=1)
+print('------------------------------------------------------------')
+print('Seccion de pruebas\n')
 
-# Establecer el estilo del grid para los ticks menores
-ax.grid(which='minor', linewidth=0.2)
+print('Puntos', puntos)
+print('segundo elemento',elemento[1])
+
+print('\n------------------------------------------------------------')
+
+
+
+#-------------------------------------------------------------------------------Grafica-------------------------------------------------------------------------------------------
+fig2, ax2 = plt.subplots(figsize=(6, 6))
+circle_inf = plt.Circle((0, 0), r_inf, color='blue', fill=False)
+circle_sup = plt.Circle((0, 0), r_sup, color='blue', fill=False)
+
+for element in elemento:
+    square = Polygon(element, edgecolor='black', facecolor='brown', alpha=0.5)
+    plt.gca().add_patch(square)
+
+
+ax2.set_xlim(-r_sup - 1, r_sup + 1)
+ax2.set_ylim(-r_sup - 1, r_sup + 1)
+ax2.add_artist(circle_inf)
+ax2.add_artist(circle_sup)
+ax2.grid(color='lightgray', linestyle='none', linewidth=1)  
 plt.show()

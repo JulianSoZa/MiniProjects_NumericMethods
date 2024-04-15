@@ -54,7 +54,7 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     puntos = list(OrderedDict.fromkeys(map(tuple, puntos)))
     puntos.sort()
     
-    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices
+    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices
     
 if __name__ == "__main__":
     nx = 30

@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import pyvista as pv
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
+from pyvista import CellType
+import meshio
 
 def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     data = []
@@ -107,7 +109,7 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     
     return V, num
 
-def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos):
+def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices):
     #print('Puntos: \n', puntos)
     data = []
     row = []
@@ -177,7 +179,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
             radio3 = np.sqrt(x_dis[i]**2 + y_dis[j+1]**2)
             radio4 = np.sqrt(x_dis[i-1]**2 + y_dis[j]**2)
             
-            if((radio1>=r_sup)&(radio2>=r_sup)) |   ((radio1>=r_sup)&(radio3>=r_sup))   |   ((radio4>=r_sup)&(radio3>=r_sup))   |   ((radio4>=r_sup)&(radio2>=r_sup)):
+            if((radio1>=r_sup)) |   ((radio2>=r_sup))   |   ((radio3>=r_sup))   |   ((radio4>=r_sup)):
                 #print(k)
                 data.append(1)
                 row.append(k)
@@ -193,7 +195,7 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
                 #print(k)
                 continue
             
-            if((radio1<=r_inf)&(radio2<=r_inf)) |   ((radio1<=r_inf)&(radio3<=r_inf))   |   ((radio4<=r_inf)&(radio3<=r_inf))   |   ((radio4<=r_inf)&(radio2<=r_inf)):
+            if((radio1<=r_inf)) |   ((radio2<=r_inf))   |   ((radio3<=r_inf))   |   ((radio4<=r_inf)):
                 #print(k)
                 data.append(1)
                 row.append(k)
@@ -237,28 +239,27 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
     
     V = spsolve(A,b)
     
-    Vrt = np.zeros((nx, ny))
-        
+    points = np.zeros((nk, 2))
+            
     for k in puntos:
         i = k%(nx)
         j = int(k/(nx))
-        Vrt[i,j] = V[k]
+        pt = [x_dis[i], y_dis[j]]
+        points[k] = pt
+    
+    cells = [("quad", elementosIndices)]
+    original_mesh = meshio.Mesh(points, cells)
+    original_mesh.point_data["Potencial"] = V
+
+    original_mesh_pv = pv.wrap(original_mesh)
         
-    # Grafica -----------------
-
-    fig4 = plt.figure()
-    ax4 = fig4.add_subplot()
-
-    cmap_T = 'viridis'
+    pl = pv.Plotter()
+    pl.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
+    pl.view_xy()
+    pl.show_grid()
+    pl.show()
     
-    x_s, y_s = np.meshgrid(x_dis, y_dis) 
-
-    cb1 = ax4.pcolormesh(y_s, x_s, Vrt, shading='auto', cmap=cmap_T)
-    fig4.colorbar(cb1, ax=ax4)
-
-    plt.tight_layout()
-    
-    return V, x_s, y_s
+    return V
 
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian
@@ -272,9 +273,9 @@ if __name__ == "__main__":
     r_inf = 3
     r_sup = 8
     
-    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
     
-    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices)
+    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices)
     
     r_inf = 3
     r_sup = 8
