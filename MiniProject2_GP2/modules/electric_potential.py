@@ -107,6 +107,39 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
 
     fig3.colorbar(c, ax=ax3)
     
+    ps = []
+    rs = []
+    
+    for k in range(nk):
+        j = int(k%(nth))
+        i = int(k/(nth))
+    
+        x_dis = round(r_dis[i]*np.cos(t_dis[j]),4)
+        y_dis = round(r_dis[i]*np.sin(t_dis[j]),4)
+        ps.append([x_dis, y_dis])
+    
+    for k in range(nth*nr):
+        j = int(k%(nth))
+        i = int(k/(nth))
+        
+        n1 = int(num(i,j))
+        n2 = int(num(i+1,j))
+        n3 = int(num(i+1,j+1))
+        n4 = int(num(i,j+1))
+        rs.append([n1, n2, n3, n4])
+
+    cells = [("quad", rs)]
+    original_mesh = meshio.Mesh(ps, cells)
+    original_mesh.point_data["Potencial"] = V
+
+    original_mesh_pv = pv.wrap(original_mesh)
+        
+    pl = pv.Plotter()
+    pl.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
+    pl.show_grid()
+    pl.view_xy()
+    pl.show()
+    
     return V, num
 
 def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices):
