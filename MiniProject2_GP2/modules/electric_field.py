@@ -2,11 +2,12 @@ import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
 import meshio
+import pyvista as pv
 
 def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s):
-    Er = np.zeros((nr+1, nth+1))
-    Et = np.zeros((nr+1, nth+1))
-    En = np.zeros((nr+1, nth+1))
+    Er = np.zeros(nk)
+    Et = np.zeros(nk)
+    En = np.zeros(nk)
 
     yy = sym.symbols('y')
 
@@ -21,35 +22,61 @@ def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s
         i = int(k/(nth))
         
         if (i==0):
-            Er[i, j] = -(V[num(i+1,j)] - V[num(i,j)])/(dr)
-            Et[i, j] = -Eint_th(t_dis[j])/r_dis[i]
-            En[i, j] = np.sqrt(Er[i, j]**2 + Et[i, j]**2)
+            Er[k] = -(V[num(i+1,j)] - V[num(i,j)])/(dr)
+            Et[k] = -Eint_th(t_dis[j])/r_dis[i]
+            En[k] = np.sqrt(Er[k]**2 + Et[k]**2)
             continue
         if (i==nr):
-            Er[i, j] = -(V[num(i,j)] - V[num(i-1,j)])/(dr)
-            Et[i, j] = -Eext_th(t_dis[j])/r_dis[i]
-            En[i, j] = np.sqrt(Er[i, j]**2 + Et[i, j]**2)
+            Er[k] = -(V[num(i,j)] - V[num(i-1,j)])/(dr)
+            Et[k] = -Eext_th(t_dis[j])/r_dis[i]
+            En[k] = np.sqrt(Er[k]**2 + Et[k]**2)
             continue
         
-        Er[i, j] = -(V[num(i+1,j)] - V[num(i-1,j)])/(2*dr)
-        Et[i, j] = -(V[num(i,j+1)] - V[num(i,j-1)])/(2*dth*r_dis[i])
-        En[i, j] = np.sqrt(Er[i, j]**2 + Et[i, j]**2)
+        Er[k] = -(V[num(i+1,j)] - V[num(i-1,j)])/(2*dr)
+        Et[k] = -(V[num(i,j+1)] - V[num(i,j-1)])/(2*dth*r_dis[i])
+        En[k] = np.sqrt(Er[k]**2 + Et[k]**2)
     
     print(np.amax(En))
     print(np.amin(En))
     
-    fig2 = plt.figure()
-    ax2 = fig2.add_subplot()
-
-    cmap_T = 'viridis'
-
-    cb2 = ax2.pcolormesh(x_s, y_s, En, shading='auto', cmap=cmap_T)
-    fig2.colorbar(cb2, ax=ax2)
-
-    plt.tight_layout()
+    # Grafica -----------------
     
-def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r_sup, r_inf, elementosIndices):
-    nk = nx*ny
+    ps = []
+    rs = []
+    
+    for k in range(nk):
+        j = int(k%(nth))
+        i = int(k/(nth))
+    
+        x_dis = round(r_dis[i]*np.cos(t_dis[j]),4)
+        y_dis = round(r_dis[i]*np.sin(t_dis[j]),4)
+        ps.append([x_dis, y_dis])
+    
+    for k in range(nth*nr):
+        j = int(k%(nth))
+        i = int(k/(nth))
+        
+        n1 = int(num(i,j))
+        n2 = int(num(i+1,j))
+        n3 = int(num(i+1,j+1))
+        n4 = int(num(i,j+1))
+        rs.append([n1, n2, n3, n4])
+
+    cells = [("quad", rs)]
+    original_mesh = meshio.Mesh(ps, cells)
+    original_mesh.point_data["Potencial"] = En
+
+    original_mesh_pv = pv.wrap(original_mesh)
+        
+    pl = pv.Plotter()
+    pl.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
+    pl.show_grid()
+    pl.view_xy()
+    pl.show()
+    
+    return En
+    
+def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r_sup, r_inf, elementosIndices, nk):
     
     Ex = np.zeros(nk)
     Ey = np.zeros(nk)
@@ -197,15 +224,16 @@ def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r
     pl.show_grid()
     pl.show()
     
+    return En
+    
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian
     import matplotlib.pyplot as plt
     from domainDiscretization import polar as doPolar
     from electric_potential import*
-
     
     nx = 400
-    ny = 200
+    ny = 400
     
     r_inf = 3
     r_sup = 8
@@ -215,5 +243,3 @@ if __name__ == "__main__":
     V = electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices)
     
     electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, elementosIndices)
-
-    plt.show()

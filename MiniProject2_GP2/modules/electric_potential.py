@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import pyvista as pv
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
-from pyvista import CellType
 import meshio
 
 def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
@@ -77,35 +76,8 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
         
     A = csr_matrix((data, (row, col)), shape=(nk, nk))
     V = spsolve(A,b)
-
-    Vrt = np.zeros((nr+1, nth+1))
-
-    for k in range(nk):
-        j = k%(nth)
-        i = int(k/(nth))
-        Vrt[i,j] = V[k]
         
     # Grafica -----------------
-
-    fig = plt.figure()
-    ax = fig.add_subplot()
-
-    cmap_T = 'viridis'
-
-    cb1 = ax.pcolormesh(x_s, y_s, Vrt, shading='auto', cmap=cmap_T)
-    fig.colorbar(cb1, ax=ax)
-
-    plt.tight_layout()
-    
-    # Grafica 2 ------------
-    
-    r, t = np.meshgrid(r_dis, t_dis)
-    
-    fig3, ax3 = plt.subplots(subplot_kw={'projection': 'polar'})
-
-    c = ax3.pcolormesh(t, r, Vrt.transpose(), shading='auto', cmap='viridis')
-
-    fig3.colorbar(c, ax=ax3)
     
     ps = []
     rs = []
@@ -142,13 +114,10 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     
     return V, num
 
-def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices):
-    #print('Puntos: \n', puntos)
+def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices, nk):
     data = []
     row = []
     col = []
-    
-    nk = nx*ny
 
     b = np.zeros(nk)
     
@@ -170,9 +139,6 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
         j = int(k/(nx))
         
         #print(f'A V_{num(i,j)} + B V_{num(i+1,j)} + C V_{num(i-1,j)} + D V_{num(i,j+1)} + E V_{num(i,j-1)}')
-        #Frontera:
-        #print(k)
-        #print(i,j)
         
         radio = np.sqrt(x_dis[i]**2 + y_dis[j]**2)
         
@@ -306,9 +272,9 @@ if __name__ == "__main__":
     r_inf = 3
     r_sup = 8
     
-    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
     
-    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices)
+    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
     
     r_inf = 3
     r_sup = 8

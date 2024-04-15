@@ -4,8 +4,6 @@ from matplotlib.patches import Polygon
 from collections import OrderedDict
 
 def cartesian_discretization(nx, ny, r_inf, r_sup):
-    x_new = []
-    y_new = []
     elemento = []
     P_totales = []
     
@@ -13,7 +11,8 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     puntosIndices = []
 
     puntos = []
-    puntos2 = []
+    
+    nk = nx*ny
 
     x_dis = np.linspace(-r_sup, r_sup, nx)           #Discretizacion del eje X
     y_dis = np.linspace(-r_sup, r_sup, ny)           #Discretizacion del eje Y 
@@ -54,7 +53,7 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     puntos = list(OrderedDict.fromkeys(map(tuple, puntos)))
     puntos.sort()
     
-    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices
+    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk
     
 if __name__ == "__main__":
     nx = 30
