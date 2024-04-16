@@ -1,9 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import sympy as sym
 import meshio
 import pyvista as pv
-import electric_field, electric_potential, plot_electric_solution
+import electric_field, electric_potential
 from domainDiscretization import cartesian as doCartesian 
 from domainDiscretization import polar as doPolar
 

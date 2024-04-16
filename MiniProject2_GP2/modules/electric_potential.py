@@ -1,10 +1,6 @@
 import numpy as np
-import sympy as sym
-import matplotlib.pyplot as plt
-import pyvista as pv
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
-import meshio
 
 def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     data = []
@@ -76,41 +72,6 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
         
     A = csr_matrix((data, (row, col)), shape=(nk, nk))
     V = spsolve(A,b)
-        
-    # Grafica -----------------
-    
-    ps = []
-    rs = []
-    
-    for k in range(nk):
-        j = int(k%(nth))
-        i = int(k/(nth))
-    
-        x_dis = round(r_dis[i]*np.cos(t_dis[j]),4)
-        y_dis = round(r_dis[i]*np.sin(t_dis[j]),4)
-        ps.append([x_dis, y_dis])
-    
-    for k in range(nth*nr):
-        j = int(k%(nth))
-        i = int(k/(nth))
-        
-        n1 = int(num(i,j))
-        n2 = int(num(i+1,j))
-        n3 = int(num(i+1,j+1))
-        n4 = int(num(i,j+1))
-        rs.append([n1, n2, n3, n4])
-
-    cells = [("quad", rs)]
-    original_mesh = meshio.Mesh(ps, cells)
-    original_mesh.point_data["Potencial"] = V
-
-    original_mesh_pv = pv.wrap(original_mesh)
-        
-    pl = pv.Plotter()
-    pl.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
-    pl.show_grid()
-    pl.view_xy()
-    pl.show()
     
     return V, num
 
@@ -238,31 +199,10 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
     
     V = spsolve(A,b)
     
-    points = np.zeros((nk, 2))
-            
-    for k in puntos:
-        i = k%(nx)
-        j = int(k/(nx))
-        pt = [x_dis[i], y_dis[j]]
-        points[k] = pt
-    
-    cells = [("quad", elementosIndices)]
-    original_mesh = meshio.Mesh(points, cells)
-    original_mesh.point_data["Potencial"] = V
-
-    original_mesh_pv = pv.wrap(original_mesh)
-        
-    pl = pv.Plotter()
-    pl.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
-    pl.view_xy()
-    pl.show_grid()
-    pl.show()
-    
     return V
 
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian
-    import matplotlib.pyplot as plt
     from domainDiscretization import polar as doPolar
 
     
@@ -284,5 +224,3 @@ if __name__ == "__main__":
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
     electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
-
-    plt.show()
