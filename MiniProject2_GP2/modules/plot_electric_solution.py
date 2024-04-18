@@ -8,8 +8,8 @@ from domainDiscretization import polar as doPolar
 r_inf = 3
 r_sup = 8
 
-nth = 400
-nr = 400
+nth = 30
+nr = 30
 
 t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
