@@ -80,21 +80,25 @@ if __name__ == "__main__":
             ax2.legend()
         print(f'Iteración con interpolación para nr y nth = {h} terminada')
 
-    #--------
-    iteraciones = np.array([5, 10, 20, 50, 100, 400])
+    #-------- cartesianas ---------------------------------------
+    iteraciones = np.array([5, 10, 15, 20, 35, 50, 75, 100, 200, 400])
     
     fig3, ax3 = plt.subplots()
+    
+    MSE_ns = np.array([])
+    nks = np.array([])
+    
     for h in iteraciones:
         nx = h
         ny = h
 
         elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
 
-        V = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
+        V_c = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
         
         # -------------------- Interpolacion ------------------
         
-        t_dis = np.linspace(0, 2*np.pi, 100)
+        t_dis = np.linspace(0, 2*np.pi, iteraciones[-1]+1)
         x_r7 = 7*np.cos(-t_dis+np.pi/2)
         y_r7 = 7*np.sin(-t_dis+np.pi/2)
         
@@ -105,17 +109,32 @@ if __name__ == "__main__":
         for k in range(nk):
             i = k%(nx)
             j = int(k/(nx))
-            V_ij[i,j] = V[k]
+            V_ij[i,j] = V_c[k]
         
-        zi = griddata((x_s.flatten(), y_s.flatten()), V_ij.flatten(), (x_r7, y_r7), method='cubic')
+        ziC = griddata((x_s.flatten(), y_s.flatten()), V_ij.flatten(), (x_r7, y_r7), method='cubic')
         
         #print(f'x_r7:\n{x_r7}\ny_r7:\n{y_r7}\nt_dis:\n{t_dis}\n')
         if h == iteraciones[-1]:
-            ax3.plot(t_dis, zi, label=f'Interpolacion nx = {nx} y ny = {ny}')
+            ax3.plot(t_dis, ziC, label=f'Interpolacion nx = {nx} y ny = {ny}')
             ax3.legend()
         else:
-            ax3.plot(t_dis, zi, '--', label=f'Interpolacion nx = {nx} y ny = {ny}')
+            ax3.plot(t_dis, ziC, '--', label=f'Interpolacion nx = {nx} y ny = {ny}')
             ax3.legend()
         print(f'Iteración con interpolación para nx y ny = {h} terminada')
         
+        # ---------- Error cuadrático medio --------------------
+        suma_err = 0
+        m = iteraciones[-1]+1
+        
+        for k in range(m):
+            suma_err += (zi[k]-ziC[k])**2
+        
+        MSE_ns = np.append(MSE_ns, (1/m)*suma_err)
+        nks = np.append(nks, h**2)
+        
+    print('MSE_ns:\n', MSE_ns)
+    
+    fig4, ax4 = plt.subplots()
+    ax4.semilogx(nks, MSE_ns)
+
     plt.show()
