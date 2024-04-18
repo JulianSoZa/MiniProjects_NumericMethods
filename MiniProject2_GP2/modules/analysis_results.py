@@ -9,7 +9,7 @@ if __name__ == "__main__":
     r_inf = 3
     r_sup = 8
     
-    iteraciones = np.array([5, 10, 20, 50, 100, 500])
+    """iteraciones = np.array([5, 10, 20, 50, 100, 500])
     
     fig, ax = plt.subplots()
     for j in iteraciones+1:
@@ -35,8 +35,6 @@ if __name__ == "__main__":
                 t_r7 = np.append(t_r7, t_dis[j])
                 r_r7 = np.append(r_r7, r_dis[i])
                 
-        #print(f't_r7:\n{t_r7}\nV_r7:\n{V_r7}\nr_r7:\n{r_r7}\nr_dis:\n{r_dis}')
-        #print('dr\n',dr)
         V_r7 = np.append(V_r7, V_r7[0])
         t_r7 = np.append(t_r7, 2*np.pi)
         if j == iteraciones[-1]:
@@ -82,7 +80,7 @@ if __name__ == "__main__":
             ax2.legend()
         print(f'Iteración con interpolación para nr y nth = {j} terminada')
            
-    plt.show()
+    plt.show()"""
     
     #--------
     
@@ -93,46 +91,24 @@ if __name__ == "__main__":
 
     V = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
     
-    V_r7 = np.array([])
-    t_r7 = np.array([])
-    r_r7 = np.array([])
-    V_th_r7 = np.empty((0,2), int)
+    # -------------------- Interpolacion ------------------
     
-    Dis_r7 = np.min(abs(7-r_dis))
+    t_dis = np.linspace(0, 2*np.pi, 100)
+    x_r7 = 7*np.cos(-t_dis+np.pi/2)
+    y_r7 = 7*np.sin(-t_dis+np.pi/2)
     
-    xx, yy = np.meshgrid(x_dis, y_dis)
-    radios = np.sqrt(xx**2 + yy**2)
-    print('radios:\n', radios)
-    Dis_r7 = np.min(abs(7-radios))
-    print('Dis_r7:\n',Dis_r7)
+    x_s, y_s = np.meshgrid(x_dis, y_dis)
+    
+    V_ij = np.zeros((nx, ny))
     
     for k in range(nk):
         i = k%(nx)
         j = int(k/(nx))
-        
-        radio = np.sqrt(x_dis[i]**2 + y_dis[j]**2)
-        if ((y_dis[j]<0)&(x_dis[i]<0)):
-            angulo = np.arctan(y_dis[j]/x_dis[i])+np.pi
-        
-        if ((y_dis[j]<0)&(x_dis[i]>0)):
-            angulo = np.arctan(y_dis[j]/x_dis[i])+2*np.pi
-        
-        if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
-            angulo =  np.arctan2(y_dis[j],x_dis[i])
-        
-        if(abs(7-radio)<=Dis_r7):
-            V_r7 = np.append(V_r7, V[k])
-            t_r7 = np.append(t_r7, angulo)
-            r_r7 = np.append(r_r7, radio)
-            V_th_r7 = np.append(V_th_r7, np.array([[angulo, V[k]]]), axis = 0)
+        V_ij[i,j] = V[k]
     
-    print('Vrtsdw: \n',V_th_r7)
-            
-    V_th_r7 = V_th_r7[V_th_r7[:, 0].argsort()]
-    t_r7 = V_th_r7[:, 0]
-    V_r7 = V_th_r7[:, 1]
-            
-    print(f't_r7:\n{t_r7}\nV_r7:\n{V_r7}\nr_r7:\n{r_r7}')
-    print('dr\n',dr)
-    plt.plot(t_r7, V_r7)
+    zi = griddata((x_s.flatten(), y_s.flatten()), V_ij.flatten(), (x_r7, y_r7), method='cubic')
+    
+    #print(f'x_r7:\n{x_r7}\ny_r7:\n{y_r7}\nt_dis:\n{t_dis}\n')
+    
+    plt.plot(t_dis, zi, label=f'Interpolacion nx = {nx} y ny = {ny}')
     plt.show()
