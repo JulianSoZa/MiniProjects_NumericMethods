@@ -19,8 +19,8 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     delx = np.abs(x_dis[0] - x_dis[1])               #Paso de x
     dely = np.abs(y_dis[0] - y_dis[1])               #paso de y 
 
-    print('Delta X:',delx)
-    print(f'Delta Y: {dely} \n')
+    #print('Delta X:',delx)
+    #print(f'Delta Y: {dely} \n')
 
     for i in range(ny):
         for j in range(nx):
