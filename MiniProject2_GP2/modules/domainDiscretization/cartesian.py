@@ -53,14 +53,73 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     
     return elemento, coordenadas, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk
     
-if __name__ == "__main__":
-    nx = 30
-    ny = 30
+def cartesian_discretization_Bonus(nx, ny, r_inf, r_sup, p):
+    elemento = []
+    P_totales = []
+    elementosIndices = []
+    puntosIndices = []
+    coordenadas = []
 
+    puntos = []
+    nk = nx*ny
+
+    x_dis = np.linspace(-r_sup, r_sup, nx)           #Discretizacion del eje X
+    y_dis = np.linspace(-r_sup, r_sup, ny)           #Discretizacion del eje Y 
+    delx = np.abs(x_dis[0] - x_dis[1])               #Paso de x
+    dely = np.abs(y_dis[0] - y_dis[1])               #paso de y 
+
+    print('Delta X:',delx)
+    print(f'Delta Y: {dely} \n')
+
+    for i in range(ny):
+        for j in range(nx):
+            P_totales.append([x_dis[j], y_dis[i]])
+
+
+    for i in range(len(P_totales)-nx-1):
+
+        A = [P_totales[i][0], P_totales[i][1]]
+        B = [P_totales[i+1][0], P_totales[i+1][1]]
+        C = [P_totales[i+1+nx][0], P_totales[i+1+nx][1]]
+        D = [P_totales[i+nx][0], P_totales[i+nx][1]]
+        filtro = [A, B, C, D]
+
+        # Contador para contar cuántos puntos cumplen la condición
+        puntos_cumplen = sum(1 for punto in filtro if punto[0]**2 + punto[1]**2 >= r_inf ** 2 and punto[0] ** 2 + punto[1] ** 2 <= r_sup ** 2)
+
+        # Si al menos dos puntos cumplen la condición, se añade el elemento
+        if (i+1)%(nx) != 0 and puntos_cumplen >= p:
+            elemento.append([A, B, C, D])
+            puntos.extend([A, B, C, D])
+
+            n1 = i
+            n2 = i+1
+            n3 = i+1+nx
+            n4 = i+nx
+            elementosIndices.append([n1, n2, n3, n4])
+            puntosIndices.append(n1)
+            puntosIndices.append(n2)
+            puntosIndices.append(n3)
+            puntosIndices.append(n4)
+
+    puntosIndices = np.unique(puntosIndices)
+            
+    coordenadas = list(OrderedDict.fromkeys(map(tuple, coordenadas)))
+    coordenadas.sort()
+
+    print('Se ha discretizado el domino cartesianamente\n')
+
+    return elemento, coordenadas, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk
+
+if __name__ == "__main__":
+    nx = 10
+    ny = 10
+    p = 4
     r_inf = 3
     r_sup = 8
 
     elemento, coordenada, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = cartesian_discretization(nx, ny, r_inf, r_sup)
+    #elemento, coordenada, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = cartesian_discretization_Bonus(nx, ny, r_inf, r_sup, p)
     
     fig2, ax2 = plt.subplots(figsize=(6, 6))
     circle_inf = plt.Circle((0, 0), r_inf, color='blue', fill=False)
