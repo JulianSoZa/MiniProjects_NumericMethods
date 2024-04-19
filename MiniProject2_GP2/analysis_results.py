@@ -1,18 +1,23 @@
-if __name__ == "__main__":
-    import electric_field, electric_potential
-    from domainDiscretization import cartesian as doCartesian 
-    from domainDiscretization import polar as doPolar
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from scipy.interpolate import griddata
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.interpolate import griddata
+from modules.domainDiscretization import cartesian as doCartesian 
+from modules.domainDiscretization import polar as doPolar
+from modules import electric_potential
 
+def results_analysis_graphs():
+    
+    # ------ Analisis del potencial electrico en polares en el radio 7 ----------------------------
+    
     r_inf = 3
     r_sup = 8
     
     disFina = 400
     iteraciones = np.array([5, 10, 20, 50, 100, disFina])
     
+    # Se analiza con la aproximación del radio mas cercano a 7 ------------
     fig, ax = plt.subplots()
+    
     for h in iteraciones:
         nth = h
         nr = h
@@ -44,10 +49,13 @@ if __name__ == "__main__":
         else:
             ax.plot(t_r7, V_r7, '--', label=f'nth y nr = {h}')
             ax.legend()
-        print(f'Iteración para nr y nth = {h} terminada')
+        print(f'Iteración para nr y nth = {h} terminada\n')
+        
+        ax.set_title('Aproximación con el radio mas cercano a 7 polares')
+        ax.set_xlabel(r'$\theta$')
+        ax.set_ylabel(r'V($\theta$)')
     
-    #------------ interpolacion ---------------------------
-    
+    # Se analiza con la interpolación de los valores en el radio 7 ------------
     fig2, ax2 = plt.subplots()
     
     for h in iteraciones:
@@ -77,9 +85,16 @@ if __name__ == "__main__":
         else:
             ax2.plot(t_dis, zi, '--', label=f'Interpolacion nth y nr: {h}')
             ax2.legend()
-        print(f'Iteración con interpolación para nr y nth = {h} terminada')
+        print(f'Iteración con interpolación para nr y nth = {h} terminada\n')
+        ax2.set_title('interpolación de los valores polares')
+        ax2.set_xlabel(r'$\theta$')
+        ax2.set_ylabel(r'V($\theta$)')
+        
+    # ---------------------------------------------------------------------------------------------
+    
+    # ------ Analisis del potencial electrico en cartesianas en el radio 7 ----------------------------
 
-    #-------- cartesianas ---------------------------------------
+    # Se analiza con la interpolación de los valores en el radio 7 ------------
     iteraciones = np.array([5, 10, 15, 20, 35, 50, 75, 100, 200, disFina])
     
     fig3, ax3 = plt.subplots()
@@ -111,17 +126,20 @@ if __name__ == "__main__":
             V_ij[i,j] = V_c[k]
         
         ziC = griddata((x_s.flatten(), y_s.flatten()), V_ij.flatten(), (x_r7, y_r7), method='cubic')
-        
-        #print(f'x_r7:\n{x_r7}\ny_r7:\n{y_r7}\nt_dis:\n{t_dis}\n')
+
         if h == iteraciones[-1]:
             ax3.plot(t_dis, ziC, label=f'Interpolacion nx = {nx} y ny = {ny}')
             ax3.legend()
         else:
             ax3.plot(t_dis, ziC, '--', label=f'Interpolacion nx = {nx} y ny = {ny}')
             ax3.legend()
-        print(f'Iteración con interpolación para nx y ny = {h} terminada')
+        print(f'Iteración con interpolación para nx y ny = {h} terminada\n')
+        ax3.set_title('interpolación de los valores cartesianas')
+        ax3.set_xlabel(r'$\theta$')
+        ax3.set_ylabel(r'V($\theta$)')
         
-        # ---------- Error cuadrático medio --------------------
+        # ---------- Error cuadrático medio --------------------------------------------
+        # se aprovecha la ultima actualizacion hecha para zi, la cual corresponde a la capa mas fina
         suma_err = 0
         m = iteraciones[-1]+1
         
@@ -135,5 +153,13 @@ if __name__ == "__main__":
     
     fig4, ax4 = plt.subplots()
     ax4.semilogx(nks, MSE_ns)
+    ax4.set_title('Error Cuadratico Medio')
+    ax4.set_xlabel(r'$n_x$'+'X'r'$n_y$')
+    ax4.set_ylabel('MSE')
+    
+    # ---------------------------------------------------------------------------------------------
 
     plt.show()
+    
+if __name__ == "__main__":
+    results_analysis_graphs()

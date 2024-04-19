@@ -26,16 +26,16 @@ def ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, name):
 
     cells = [("quad", rs)]
     original_mesh = meshio.Mesh(ps, cells)
-    original_mesh.point_data["Potencial"] = V
+    original_mesh.point_data[name] = V
 
     original_mesh_pv = pv.wrap(original_mesh)
     original_mesh_pv.save(f'Malla_{name}_Polares.vtk')
 
-    labels = dict(xlabel='X', ylabel='Y')
+    labels = dict(xtitle='X', ytitle='Y')
 
 
     pl1 = pv.Plotter()
-    pl1.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
+    pl1.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars=name)
     pl1.show_grid()
     pl1.add_title(f"{name} electrico en polares")
     pl1.show_grid(**labels)
@@ -43,7 +43,7 @@ def ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, name):
     pl1.show()
     return
 
-def ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V):
+def ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V, name):
     points = np.zeros((nk, 2))
                 
     for k in puntosIndices:
@@ -54,14 +54,19 @@ def ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, eleme
 
     cells = [("quad", elementosIndices)]
     original_mesh = meshio.Mesh(points, cells)
-    original_mesh.point_data["Potencial"] = V
+    original_mesh.point_data[name] = V
 
     original_mesh_pv = pv.wrap(original_mesh)
+    original_mesh_pv.save(f'Malla_{name}_Cartesianas.vtk')
+    
+    labels = dict(xtitle='X', ytitle='Y')
         
     pl2 = pv.Plotter()
-    pl2.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars="Potencial")
+    pl2.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars=name)
     pl2.view_xy()
     pl2.show_grid()
+    pl2.add_title(f"{name} electrico en polares")
+    pl2.show_grid(**labels)
     pl2.show()
     return
 
@@ -90,6 +95,6 @@ if __name__ == '__main__':
     V_c, V_space_c = electric_potential.electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
     En_c, E_space_c = electric_field.electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V_c, delx, dely, puntosIndices, r_sup, r_inf, nk)
 
-    ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V_c)
-    ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, En_c)
+    ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V_c, 'Potencial')
+    ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, En_c, 'Campo')
     
