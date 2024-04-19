@@ -1,5 +1,3 @@
-
-
 def ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, name):
     ps = []
     rs = []
@@ -75,24 +73,24 @@ if __name__ == '__main__':
     r_sup = 8
 
 
-    nth = 30
-    nr = 30
+    nth = 100
+    nr = 100
 
-    nx = 30
-    ny = 30
+    nx = 100
+    ny = 100
 
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-    V, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+    V, V_sapce, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
 
-    En = electric_field.electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s)
+    En, E_space = electric_field.electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num)
 
     ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, 'Potencial')
     ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, En, 'Campo')
 
     elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
-    V_c = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
-    En_c = electric_field.electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, elementosIndices, nk)
+    V_c, V_space_c = electric_potential.electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
+    En_c, E_space_c = electric_field.electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V_c, delx, dely, puntosIndices, r_sup, r_inf, nk)
 
     ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V_c)
     ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, En_c)

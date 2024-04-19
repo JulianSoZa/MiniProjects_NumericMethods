@@ -39,12 +39,11 @@ if __name__ == "__main__":
     nth = 15
     nr = 12
     
-    t_dis, r_dis, th, r, x_s, y_s = polar_discretization(nth, nr)
+    t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = polar_discretization(nth, nr)
     
-    #-------------------------------------------------------------------------------Grafica-------------------------------------------------------------------------------------------
     fig, ax = plt.subplots(figsize=(6, 6))
 
-    for i in range(nr):
+    for i in range(nr+1):
         ax.plot(x_s[i], y_s[i], color='firebrick')
 
     for j in range(nth):

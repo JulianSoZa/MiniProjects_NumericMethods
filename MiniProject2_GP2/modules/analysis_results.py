@@ -18,7 +18,7 @@ if __name__ == "__main__":
         
         t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-        V, V_space, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+        V, V_space, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
         
         V_r7 = np.array([])
         t_r7 = np.array([])
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     
         t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-        V, V_space, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+        V, V_space, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
 
         ri = np.array([7])
         ti = np.linspace(0, 2*np.pi, nth+1)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
         elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
 
-        V_c, V_space_c = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
+        V_c, V_space_c = electric_potential.electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
         
         # -------------------- Interpolacion ------------------
         

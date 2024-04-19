@@ -61,10 +61,9 @@ if __name__ == "__main__":
 
     r_inf = 3
     r_sup = 8
+
+    elemento, coordenada, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = cartesian_discretization(nx, ny, r_inf, r_sup)
     
-    elemento, puntos = cartesian_discretization(nx, ny, r_inf, r_sup)
-    
-    #-------------------------------------------------------------------------------Grafica-------------------------------------------------------------------------------------------
     fig2, ax2 = plt.subplots(figsize=(6, 6))
     circle_inf = plt.Circle((0, 0), r_inf, color='blue', fill=False)
     circle_sup = plt.Circle((0, 0), r_sup, color='blue', fill=False)

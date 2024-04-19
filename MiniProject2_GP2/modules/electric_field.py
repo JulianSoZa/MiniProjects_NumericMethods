@@ -1,7 +1,7 @@
 import numpy as np
 import sympy as sym
 
-def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s):
+def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num):
     Er = np.zeros(nk)
     Et = np.zeros(nk)
     En = np.zeros(nk)
@@ -45,7 +45,7 @@ def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s
         
     return En, E_space
     
-def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r_sup, r_inf, elementosIndices, nk):
+def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r_sup, r_inf, nk):
     
     Ex = np.zeros(nk)
     Ey = np.zeros(nk)
@@ -188,14 +188,14 @@ if __name__ == "__main__":
     from domainDiscretization import polar as doPolar
     from electric_potential import*
     
-    nx = 400
-    ny = 400
+    nx = 100
+    ny = 100
     
     r_inf = 3
     r_sup = 8
     
-    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
     
-    V = electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices)
+    V, V_space = electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
     
-    electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, elementosIndices)
+    En, E_space = electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, nk)

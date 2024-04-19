@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
 
-def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
+def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk):
     data = []
     row = []
     col = []
@@ -82,7 +82,7 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     
     return V, V_space, num
 
-def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices, nk):
+def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, nk):
     data = []
     row = []
     col = []
@@ -220,21 +220,21 @@ if __name__ == "__main__":
     from domainDiscretization import polar as doPolar
 
     
-    nx = 400
-    ny = 400
+    nx = 100
+    ny = 100
     
     r_inf = 3
     r_sup = 8
     
-    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    elemento, coordenada, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
     
-    electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
+    electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
     
     r_inf = 3
     r_sup = 8
 
-    nth = 400
-    nr = 200
+    nth = 100
+    nr = 100
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-    electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+    electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
