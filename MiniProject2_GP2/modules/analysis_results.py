@@ -9,7 +9,8 @@ if __name__ == "__main__":
     r_inf = 3
     r_sup = 8
     
-    iteraciones = np.array([5, 10, 20, 50, 100, 400])
+    disFina = 400
+    iteraciones = np.array([5, 10, 20, 50, 100, disFina])
     
     fig, ax = plt.subplots()
     for h in iteraciones:
@@ -47,8 +48,6 @@ if __name__ == "__main__":
     
     #------------ interpolacion ---------------------------
     
-    iteraciones = np.array([5, 10, 20, 50, 100, 400])
-    
     fig2, ax2 = plt.subplots()
     
     for h in iteraciones:
@@ -81,7 +80,7 @@ if __name__ == "__main__":
         print(f'Iteración con interpolación para nr y nth = {h} terminada')
 
     #-------- cartesianas ---------------------------------------
-    iteraciones = np.array([5, 10, 15, 20, 35, 50, 75, 100, 200, 400])
+    iteraciones = np.array([5, 10, 15, 20, 35, 50, 75, 100, 200, disFina])
     
     fig3, ax3 = plt.subplots()
     

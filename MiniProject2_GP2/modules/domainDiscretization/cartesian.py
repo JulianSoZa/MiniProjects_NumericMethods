@@ -10,7 +10,7 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     elementosIndices = []
     puntosIndices = []
 
-    puntos = []
+    coordenadas = []
     
     nk = nx*ny
 
@@ -18,9 +18,6 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
     y_dis = np.linspace(-r_sup, r_sup, ny)           #Discretizacion del eje Y 
     delx = np.abs(x_dis[0] - x_dis[1])               #Paso de x
     dely = np.abs(y_dis[0] - y_dis[1])               #paso de y 
-
-    #print('Delta X:',delx)
-    #print(f'Delta Y: {dely} \n')
 
     for i in range(ny):
         for j in range(nx):
@@ -35,7 +32,7 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
             C = [P_totales[i+1+nx][0], P_totales[i+1+nx][1]]
             D = [P_totales[i+nx][0], P_totales[i+nx][1]]
             elemento.append([A,B,C,D])
-            puntos.extend([A,B,C,D])
+            coordenadas.extend([A,B,C,D])
             
             n1 = i
             n2 = i+1
@@ -48,12 +45,13 @@ def cartesian_discretization(nx, ny, r_inf, r_sup):
             puntosIndices.append(n4)
             
     puntosIndices = np.unique(puntosIndices)
-    #print(puntosIndices)
             
-    puntos = list(OrderedDict.fromkeys(map(tuple, puntos)))
-    puntos.sort()
+    coordenadas = list(OrderedDict.fromkeys(map(tuple, coordenadas)))
+    coordenadas.sort()
     
-    return elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk
+    print('Se ha discretizado el domino cartesianamente\n')
+    
+    return elemento, coordenadas, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk
     
 if __name__ == "__main__":
     nx = 30

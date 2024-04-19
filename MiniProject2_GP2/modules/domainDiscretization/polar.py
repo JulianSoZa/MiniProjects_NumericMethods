@@ -2,20 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def polar_discretization(nth, nr):
-    
-    """
-    Args:
-        nth: a
-        nr: a
-        
-    Returns:
-        t_dis: a
-        r_dis: a
-        th: a
-        r: a
-        x_s: a
-        y_s: a
-    """
     r_inf = 3
     r_sup = 8
     
@@ -31,6 +17,8 @@ def polar_discretization(nth, nr):
 
     x_s = r * np.cos(th)                         #Convercion a carteciano (grafica)
     y_s = r* np.sin(th)                         #Convercion a carteciano (grafica)
+    
+    print('Se ha discretizado el dominio polarmente\n')
     
     return t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk
 

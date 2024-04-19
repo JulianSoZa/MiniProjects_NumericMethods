@@ -17,10 +17,9 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk):
     for k in range(nk):
         j = k%(nth)
         i = int(k/(nth))
-        #print(f'{k} = {i}, {j}')
         
         rij = r_dis[i]
-        #rij = 2
+
         clambda = dth/dr
         h = (clambda**2)*dr/rij
         alpha = 1/(rij**2)
@@ -31,23 +30,20 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk):
         cD = alpha
         cE = alpha
         
-        #print(f'A V_{num(i,j)} + B V_{num(i+1,j)} + C V_{num(i-1,j)} + D V_{num(i,j+1)} + E V_{num(i,j-1)}')
-        
         #Frontera:
         if(i == 0):
             data.append(1)
             row.append(k)
             col.append(k)
             b[k] = V_int(t_dis[j])
-            #print(k)
             continue
         
+        #Frontera:
         if(i == nr):
             data.append(1)
             row.append(k)
             col.append(k)
             b[k] = V_ext(t_dis[j])
-            #print(k)
             continue
             
         data.append(cA)
@@ -79,6 +75,8 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk):
         j = k%(nth)
         i = int(k/(nth))
         V_space[k] = np.array([r_dis[i], t_dis[j], V[k]])
+        
+    print('Se soluciona el potencial electrico en polares')
     
     return V, V_space, num
 
@@ -106,8 +104,6 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
         i = k%(nx)
         j = int(k/(nx))
         
-        #print(f'A V_{num(i,j)} + B V_{num(i+1,j)} + C V_{num(i-1,j)} + D V_{num(i,j+1)} + E V_{num(i,j-1)}')
-        
         radio = np.sqrt(x_dis[i]**2 + y_dis[j]**2)
         
         if k in puntos:
@@ -123,7 +119,6 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
                 
                 if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
-                #print(k)
                 continue
         
             if(radio <= r_inf):
@@ -138,7 +133,6 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
                 
                 if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_int(np.arctan2(y_dis[j],x_dis[i]))
-                #print(k)
                 continue
             
             radio1 = np.sqrt(x_dis[i+1]**2 + y_dis[j]**2)
@@ -147,7 +141,6 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
             radio4 = np.sqrt(x_dis[i-1]**2 + y_dis[j]**2)
             
             if((radio1>=r_sup)) |   ((radio2>=r_sup))   |   ((radio3>=r_sup))   |   ((radio4>=r_sup)):
-                #print(k)
                 data.append(1)
                 row.append(k)
                 col.append(k)
@@ -159,11 +152,9 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
                 
                 if (((y_dis[j]>0)&(x_dis[i]>0))|((y_dis[j]>0)&(x_dis[i]<0))):
                     b[k] = V_ext(np.arctan2(y_dis[j],x_dis[i]))
-                #print(k)
                 continue
             
             if((radio1<=r_inf)) |   ((radio2<=r_inf))   |   ((radio3<=r_inf))   |   ((radio4<=r_inf)):
-                #print(k)
                 data.append(1)
                 row.append(k)
                 col.append(k)
@@ -212,6 +203,8 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
         i = k%(nx)
         j = int(k/(nx))
         V_space[k] = np.array([x_dis[i], y_dis[j], V[k]])
+        
+    print('Se soluciona el potencial electrico en cartesianas')
     
     return V, V_space
 

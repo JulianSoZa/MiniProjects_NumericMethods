@@ -33,8 +33,8 @@ def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num):
         Et[k] = -(V[num(i,j+1)] - V[num(i,j-1)])/(2*dth*r_dis[i])
         En[k] = np.sqrt(Er[k]**2 + Et[k]**2)
     
-    print(np.amax(En))
-    print(np.amin(En))
+    print('Mayor valor de la norma del campo electrico en polares: ',np.amax(En))
+    print('Menor valor de la norma del campo electrico en polares: ',np.amin(En))
     
     E_space = np.zeros((nk,4))
     
@@ -42,6 +42,8 @@ def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num):
         j = k%(nth)
         i = int(k/(nth))
         E_space[k] = np.array([r_dis[i], t_dis[j], Er[k], Et[k]])
+        
+    print('Se soluciona el campo electrico en polares')
         
     return En, E_space
     
@@ -170,8 +172,8 @@ def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r
             Ey[k] = -(V[num(i,j+1)] - V[num(i,j-1)])/(2*dy)
             En[k] = np.sqrt(Ex[k]**2 + Ey[k]**2)
             
-    print(np.amax(En))
-    print(np.amin(En))
+    print('Mayor valor de la norma del campo electrico en cartesianas: ',np.amax(En))
+    print('Menor valor de la norma del campo electrico en cartesianas: ',np.amin(En))
     
     E_space = np.zeros((nk,4))
     
@@ -179,6 +181,8 @@ def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r
         i = k%(nx)
         j = int(k/(nx))
         E_space[k] = np.array([x_dis[i], y_dis[j], Ex[k], Ey[k]])
+        
+    print('Se soluciona el campo electrico en cartesianas')
     
     return En, E_space
     
