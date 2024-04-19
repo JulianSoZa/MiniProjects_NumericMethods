@@ -36,7 +36,14 @@ def electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s
     print(np.amax(En))
     print(np.amin(En))
     
-    return En
+    E_space = np.zeros((nk,4))
+    
+    for k in range(nk):
+        j = k%(nth)
+        i = int(k/(nth))
+        E_space[k] = np.array([r_dis[i], t_dis[j], Er[k], Et[k]])
+        
+    return En, E_space
     
 def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r_sup, r_inf, elementosIndices, nk):
     
@@ -166,7 +173,14 @@ def electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, dx, dy, puntos, r
     print(np.amax(En))
     print(np.amin(En))
     
-    return En
+    E_space = np.zeros((nk,4))
+    
+    for k in range(nk):
+        i = k%(nx)
+        j = int(k/(nx))
+        E_space[k] = np.array([x_dis[i], y_dis[j], Ex[k], Ey[k]])
+    
+    return En, E_space
     
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian

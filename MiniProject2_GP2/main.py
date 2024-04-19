@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 from modules import electric_field, electric_potential
 from modules.domainDiscretization import cartesian as doCartesian 
 from modules.domainDiscretization import polar as doPolar
@@ -11,15 +12,31 @@ nr = 400
 
 t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-V, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
+V, V_space, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s)
 
-electric_field.electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s)
+df = pd.DataFrame(V_space)
+df.columns = ['r', 'theta ', 'V']
+df.to_csv('Potencial_Electrico_Polares.txt', sep='\t')
+
+En, E_space = electric_field.electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num, x_s, y_s)
+
+df = pd.DataFrame(E_space)
+df.columns = ['r', 'theta', 'Er', 'Et']
+df.to_csv('Campo_Electrico_Polares.txt', sep='\t')
 
 nx = 400
 ny = 400
 
 elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
 
-V = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
+V, V_space = electric_potential.electric_potential_solution_cartesian(elemento, puntos, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, elementosIndices, nk)
 
-electric_field.electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, elementosIndices, nk)
+df = pd.DataFrame(V_space)
+df.columns = ['x', 'y', 'V']
+df.to_csv('Potencial_Electrico_Cartesianas.txt', sep='\t')
+
+En, E_space = electric_field.electric_field_solution_cartesian(nx, ny, x_dis, y_dis, V, delx, dely, puntosIndices, r_sup, r_inf, elementosIndices, nk)
+
+df = pd.DataFrame(E_space)
+df.columns = ['x', 'y', 'Ex', 'Ey']
+df.to_csv('Campo_Electrico_Cartesianas.txt', sep='\t')

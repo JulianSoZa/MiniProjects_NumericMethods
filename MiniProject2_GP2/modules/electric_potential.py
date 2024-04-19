@@ -73,7 +73,14 @@ def electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk, x_s, y_s):
     A = csr_matrix((data, (row, col)), shape=(nk, nk))
     V = spsolve(A,b)
     
-    return V, num
+    V_space = np.zeros((nk,3))
+    
+    for k in range(nk):
+        j = k%(nth)
+        i = int(k/(nth))
+        V_space[k] = np.array([r_dis[i], t_dis[j], V[k]])
+    
+    return V, V_space, num
 
 def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntos, elementosIndices, nk):
     data = []
@@ -199,7 +206,14 @@ def electric_potential_solution_cartesian(elemento, coordenadas, nx, ny, x_dis, 
     
     V = spsolve(A,b)
     
-    return V
+    V_space = np.zeros((nk,3))
+    
+    for k in range(nk):
+        i = k%(nx)
+        j = int(k/(nx))
+        V_space[k] = np.array([x_dis[i], y_dis[j], V[k]])
+    
+    return V, V_space
 
 if __name__ == "__main__":
     from domainDiscretization import cartesian as doCartesian
