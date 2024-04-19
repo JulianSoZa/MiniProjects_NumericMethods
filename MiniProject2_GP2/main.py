@@ -10,8 +10,8 @@ import analysis_results
 r_inf = 3
 r_sup = 8
 
-nth = 100
-nr = 100
+nth = 400
+nr = 400
 
 t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
@@ -33,8 +33,8 @@ df.to_csv('Campo_Electrico_Polares.txt', sep='\t')
 
 # ----------------- Coordenadas Cartesianas -------------------------------
 
-nx = 100
-ny = 100
+nx = 400
+ny = 400
 
 elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
 
