@@ -21,3 +21,5 @@ El modulo plot_electric_solution tiene las funciones:
         ploter_finite_solutions_cartesian: para graficar la solucion del potencial y el campo electrico en coordenadas cartesianas. 
 
 El modulo analysis_results para obtener las gráficas de la comparacion y el analisis de resultados.
+
+En el modulo bonus se tienen diferentes formas para discretizar el domino en coordenadas cartesiasnas, esto haciendo uso la funcion cartesian_discretization_Bonus del modulo cartesian.
