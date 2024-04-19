@@ -1,3 +1,5 @@
+Código elaborado por Karol Andrea Peña Arango, Juan Manuel Arboleda Londoño Y Julián Solano
+
 En este trabajo se desarrollan los problemas propuestos en el miniproyecto numero 2 de la asignatura de Métodos Numéricos para Ingeniería, en el cual se aborda el método de diferencias finitas para solucionar el potencial y el campo electrico en coordenadas polares y cartesianas en 2D para un capacitor en forma de anillo.
 
 El trabajo consta de modulos con funciones para resolver un problema específico y un archivo main donde se podrá correr la rutina que contiene los procedimientos, o puede comentar alguna parte en específica.
