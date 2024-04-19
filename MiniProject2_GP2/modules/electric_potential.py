@@ -216,25 +216,26 @@ def electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_in
     return V, V_space
 
 if __name__ == "__main__":
-    from domainDiscretization import cartesian as doCartesian
+    import plot_electric_solution
+    from domainDiscretization import cartesian as doCartesian 
     from domainDiscretization import polar as doPolar
 
-    
-    nx = 100
-    ny = 100
-    
-    r_inf = 3
-    r_sup = 8
-    
-    elemento, coordenada, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
-    
-    electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
-    
     r_inf = 3
     r_sup = 8
 
     nth = 100
     nr = 100
+
+    nx = 100
+    ny = 100
+
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
 
-    electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
+    V, V_sapce, num = electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
+
+    plot_electric_solution.ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, 'Potencial')
+
+    elemento, puntos, x_dis, y_dis, delx, dely, puntosIndices, elementosIndices, nk = doCartesian.cartesian_discretization(nx, ny, r_inf, r_sup)
+    V_c, V_space_c = electric_potential_solution_cartesian(nx, ny, x_dis, y_dis, delx, dely, r_inf, r_sup, puntosIndices, nk)
+
+    plot_electric_solution.ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, elementosIndices, V_c)

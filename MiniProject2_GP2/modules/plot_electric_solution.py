@@ -1,3 +1,7 @@
+import numpy as np
+import meshio
+import pyvista as pv
+
 def ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, name):
     ps = []
     rs = []
@@ -25,6 +29,7 @@ def ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, name):
     original_mesh.point_data["Potencial"] = V
 
     original_mesh_pv = pv.wrap(original_mesh)
+    original_mesh_pv.save(f'Malla_{name}_Polares.vtk')
 
     labels = dict(xlabel='X', ylabel='Y')
 
@@ -61,17 +66,12 @@ def ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, eleme
     return
 
 if __name__ == '__main__':
-
-    import numpy as np
-    import meshio
-    import pyvista as pv
     import electric_field, electric_potential
     from domainDiscretization import cartesian as doCartesian 
     from domainDiscretization import polar as doPolar
 
     r_inf = 3
     r_sup = 8
-
 
     nth = 100
     nr = 100
@@ -80,9 +80,7 @@ if __name__ == '__main__':
     ny = 100
 
     t_dis, r_dis, th, r, x_s, y_s, dth, dr, nk = doPolar.polar_discretization(nth, nr)
-
     V, V_sapce, num = electric_potential.electric_potential_solution(nth, nr, dth, dr, t_dis, r_dis, nk)
-
     En, E_space = electric_field.electric_field_solution(nth, nr, dth, dr, t_dis, r_dis, nk, V, num)
 
     ploter_finite_solutions(nk, nth, r_dis, t_dis, nr, num, V, 'Potencial')
