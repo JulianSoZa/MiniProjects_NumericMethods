@@ -65,7 +65,7 @@ def ploter_finite_solutions_cartesian(nk, nx, x_dis, y_dis, puntosIndices, eleme
     pl2.add_mesh(original_mesh_pv, show_edges=False, cmap='viridis', scalars=name)
     pl2.view_xy()
     pl2.show_grid()
-    pl2.add_title(f"{name} electrico en polares")
+    pl2.add_title(f"{name} electrico en cartesianas")
     pl2.show_grid(**labels)
     pl2.show()
     return
