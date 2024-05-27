@@ -29,6 +29,6 @@ def anymesh2D(file, tm, name):
 
 if __name__ == "__main__":
     file = "mapa_antioquia.npy"
-    tm = 1e3
+    tm = 1e3                        #tamaño promedio del elemento
     name = 'Antioquia'
     anymesh2D(file, tm, name)
