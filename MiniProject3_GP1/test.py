@@ -11,6 +11,7 @@ from scipy.sparse.linalg import spsolve
 
 name = 'Antioquia'
 mesh = meshio.read(f"{name}.msh")
+niveles = np.load('niveles.npy')
 data = []
 row = []
 col = []
@@ -19,12 +20,28 @@ vertices = mesh.points
 num_vertices = len(vertices)
 triangles = mesh.cells_dict['triangle']
 
-print(len(vertices))
-print(triangles[0])
 
-vertices_frontera = mesh.cells[0].data
-vertices_frontera = list(set( [v for line in vertices_frontera for v in line] ))
-print(vertices_frontera)
+
+print('Vamos k ')
+
+x = niveles[:,0]
+y = niveles[:,1]
+z = niveles[:,2]
+
+X = np.array(vertices[:,0], dtype=np.float32)
+Y = np.array(vertices[:,1], dtype=np.float32)
+
+
+print('Vamos kk ')
+interp = Interpolator(list(zip(x,y)),z)
+Z = interp(X,Y)
+
+plt.pcolormesh(X, Y, Z, shading='auto')
+plt.plot(x, y, "ok", label="input point")
+plt.legend()
+plt.colorbar()
+plt.axis("equal")
+plt.show()
 
 '''for k in vertices:
     data.append(1)
@@ -64,6 +81,8 @@ b = np.zeros(num_vertices)
 print(K)'''
 
 #------------------------------------------------------------------------------------------------------------
+
+'''
 plt.figure()
 
 plt.triplot(vertices[:,0], vertices[:,1], triangles, linewidth=1)
@@ -73,4 +92,5 @@ plt.grid()
 plt.axis('equal')
 plt.title("Malla")
 plt.xlabel("x"); plt.ylabel("y")
-plt.show()
+#plt.show()
+'''
