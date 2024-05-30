@@ -29,13 +29,15 @@ def anymesh2D(file, tm, name):
     gmsh.option.setNumber("Mesh.SurfaceFaces",1)
     gmsh.option.setNumber("Mesh.Points",1)
     gmsh.write(f"{name}.msh")
-    gmsh.fltk.run()
+    #gmsh.fltk.run()
     gmsh.finalize()
 
-    return
+    return polys  
 
 if __name__ == "__main__":
     file = "mapa_antioquia.npy"
     tm = 1e3                        #tamaño promedio del elemento
     name = 'Antioquia'
-    anymesh2D(file, tm, name)
+    polys = anymesh2D(file, tm, name)
+    
+    print(polys.shape)
