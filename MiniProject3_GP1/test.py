@@ -7,6 +7,7 @@ from scipy.interpolate import LinearNDInterpolator as Interpolator
 from scipy.interpolate import NearestNDInterpolator as NRInterpolator
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
+import pyvista as pv
 
 
 name = 'Antioquia'
@@ -29,5 +30,17 @@ mesh_level = interpolator_fun(vertices[:,0],vertices[:,1])
 nans_values = np.isnan(mesh_level)
 mesh_level[nans_values] = nr_interpolator_fun(vertices[nans_values,0],vertices[nans_values,1])
 
+cells = [("triangle", triangles)]
 
+malla = meshio.Mesh(vertices, cells)
+malla.point_data['Z'] = mesh_level
 
+malla = pv.wrap(malla)
+
+malla.save(f'{name}ConNiveles.vtk')
+
+plotter = pv.Plotter()
+
+plotter.add_mesh(malla, show_edges=False, cmap='terrain', scalars='Z')
+
+plotter.show()

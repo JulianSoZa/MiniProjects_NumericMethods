@@ -6,7 +6,7 @@ from modules import initialConditions
 import json
 
 ### Se carga la malla
-mesh = meshio.read("Antioquia.msh")
+mesh = meshio.read("AntioquiaConNiveles.vtk")
 
 vertices = mesh.points
 num_vertices = len(vertices)
@@ -85,7 +85,7 @@ print('dt: ', dt)
 
 dt = 0.002
 
-T = 70
+T = 7
 Nt = int(T/dt)
 t_save = np.round(7/dt)
 
@@ -128,7 +128,7 @@ for i in enumerate(dt_span, 1):
         
 print(len(Is))
 
-malla = meshio.read("Antioquia.msh")
+malla = meshio.read("AntioquiaConNiveles.vtk")
 
 malla.point_data['Infectados_Inicial'] = Is[0]
 malla.point_data['Infectados_Final'] = Is[-1]
@@ -141,4 +141,5 @@ plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Inicia
 
 plotter.subplot(0, 1)
 plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Final')
+
 plotter.show()

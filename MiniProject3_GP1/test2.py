@@ -1,7 +1,7 @@
 import numpy as np
+import meshio
+import pyvista as pv
 
-a = np.arange(1, 10)
-print(a[1:])
-for i in enumerate(a[1:]):
-    print(i)
-print(a)
+a = np.array([np.nan, 2, 1])
+
+print(np.max(a))
