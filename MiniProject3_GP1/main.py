@@ -24,6 +24,8 @@ colM = []
 rowK = []
 colK = []
 
+Aes = []
+
 dh = np.inf
 
 for tri in triangles:
@@ -40,6 +42,7 @@ for tri in triangles:
     
     # Matriz dde masa elemental
     Ae = (1/2)*np.cross(PB - PA, PC - PA)
+    Aes.append(Ae)
     Me = (Ae/6)*np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     
     #Matriz de rigidez
@@ -73,7 +76,7 @@ M_diag = M.diagonal()
 
 Di = 1.5E6
 Ds = 1E6
-beta = 0.4
+beta = 0.9
 gamma = 0.2
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
@@ -85,15 +88,15 @@ print('dt: ', dt)
 
 dt = 0.002
 
-T = 7
+T = 3
 Nt = int(T/dt)
 t_save = np.round(7/dt)
 
 with open("municipios.json", 'r') as openfile:
     towns_data = json.load(openfile)
 
-towns = ["Entrerrios", "San Luis", "Sopetran"] ### Lista de municipios que har´an parte de los suceptibles
-i_towns = ["Entrerrios", "San Luis", "Sopetran"] ### Lista de municipios que har´an parte de los infectados
+towns = ["Entrerrios"] ### Lista de municipios que har´an parte de los suceptibles
+i_towns = ["Entrerrios"] ### Lista de municipios que har´an parte de los infectados
 ### El array points corresponde a los puntos de la malla ya creada
 Sn, In = initialConditions.create_initial_conditions(towns, i_towns, vertices, towns_data, 1, alpha=0.6)
 
@@ -134,7 +137,6 @@ malla.point_data['Infectados_Inicial'] = Is[0]
 malla.point_data['Infectados_Final'] = Is[-1]
 
 plotter = pv.Plotter(shape=(1, 2))
-#plotter = pv.Plotter()
 
 plotter.subplot(0, 0)
 plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Inicial')
@@ -143,3 +145,37 @@ plotter.subplot(0, 1)
 plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Final')
 
 plotter.show()
+
+malla.point_data['Susceptibles_Inicial'] = Ss[0]
+malla.point_data['Susceptibles_Final'] = Ss[-1]
+
+plotter = pv.Plotter(shape=(1, 2))
+
+plotter.subplot(0, 0)
+plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Inicial')
+
+plotter.subplot(0, 1)
+plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Final')
+
+plotter.show()
+
+for i, j in zip(range(len(Is)), range(len(Ss))):
+    infectados = 0
+    susceptibles = 0
+
+    for tri in enumerate(triangles):
+
+        I_PA = Is[i][tri[1][0]] 
+        I_PB = Is[i][tri[1][1]]
+        I_PC = Is[i][tri[1][2]]
+        
+        infectados += (1/3)*(I_PA + I_PB + I_PC)*Aes[tri[0]]
+        
+        S_PA = Ss[j][tri[1][0]] 
+        S_PB = Ss[j][tri[1][1]]
+        S_PC = Ss[j][tri[1][2]]
+        
+        susceptibles += (1/3)*(S_PA + S_PB + S_PC)*Aes[tri[0]]
+        
+    print('Infectados: ', infectados)
+    print('susceptibles: ', susceptibles)
