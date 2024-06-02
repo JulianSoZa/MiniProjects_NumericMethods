@@ -16,14 +16,14 @@ triangles = mesh.cells_dict['triangle']
 Ma = 'Matriz_de_masa'
 Mr = 'Matriz_de_Rigidez'
 d_h = 'dh'
-
-
+A_es = 'Aes'
 
 try: 
     print('Inicia la lectura\n')
     M = load_npz(f"{Ma}.npz")
     K = load_npz(f"{Mr}.npz")
     dh = np.load(f"{d_h}.npy")
+    Aes = np.load(f"{A_es}.npy")
     print('Se leyó correctamente\n')
 except:
     dh = np.inf
@@ -37,7 +37,7 @@ except:
     rowK = []
     colK = []
     for tri in triangles:
-
+        print('No ne leyó correctamente\n')
         # Puntos de los triangulos
         PA = vertices[tri[0],:2] 
         PB = vertices[tri[1],:2]
@@ -81,15 +81,15 @@ except:
     save_npz(f'{Mr}.npz',K)
     save_npz(f'{Ma}.npz',M)
     np.save(f"{d_h}", dh)
-    print('No ne leyó correctamente\n')
-
+    np.save(f"{A_es}", Aes)
+    print('Se almacenaron las variables')
 
 M_diag = M.diagonal()
 
-Di = 6.5E7
-Ds = 1E2
-beta = 10000
-gamma = 0
+Di = 0.6E6
+Ds = 0.5E6
+beta = 1440
+gamma = 0.02
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
 
@@ -98,9 +98,9 @@ dt = np.min(dt_cri)
 print('dh: ', dh)
 print('dt: ', dt)
 
-dt = 0.00011
+dt = 0.006
 
-T = 20
+T = 7
 Nt = int(T/dt)
 t_save = np.round(7/dt)
 
