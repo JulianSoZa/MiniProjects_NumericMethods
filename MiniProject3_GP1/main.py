@@ -1,6 +1,6 @@
 import meshio
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, save_npz, load_npz
 import pyvista as pv
 from modules import initialConditions
 import json
@@ -13,71 +13,83 @@ num_vertices = len(vertices)
 
 triangles = mesh.cells_dict['triangle']
 
-#
+Ma = 'Matriz_de_masa'
+Mr = 'Matriz_de_Rigidez'
+d_h = 'dh'
 
-dataK = []
-dataM = []
 
-rowM = []
-colM = []
 
-rowK = []
-colK = []
+try: 
+    print('Inicia la lectura\n')
+    M = load_npz(f"{Ma}.npz")
+    K = load_npz(f"{Mr}.npz")
+    dh = np.load(f"{d_h}.npy")
+    print('Se leyó correctamente\n')
+except:
+    dh = np.inf
+    Aes = []
+    dataK = []
+    dataM = []
 
-Aes = []
+    rowM = []
+    colM = []
 
-dh = np.inf
+    rowK = []
+    colK = []
+    for tri in triangles:
 
-for tri in triangles:
-
-    # Puntos de los triangulos
-    PA = vertices[tri[0],:2] 
-    PB = vertices[tri[1],:2]
-    PC = vertices[tri[2],:2]
-    
-    lado_min = min(np.array([np.linalg.norm(PB - PA), np.linalg.norm(PC - PA), np.linalg.norm(PC - PB)]))
-    
-    if lado_min<dh:
-        dh = lado_min
-    
-    # Matriz dde masa elemental
-    Ae = (1/2)*np.cross(PB - PA, PC - PA)
-    Aes.append(Ae)
-    Me = (Ae/6)*np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    
-    #Matriz de rigidez
-    G = np.matrix([PB-PA,PC-PA]).transpose()
-    
-    B = np.matrix([[PB[1]-PC[1], PC[1]-PA[1], PA[1]-PB[1]],
-                   [PC[0]-PB[0], PA[0]-PC[0], PB[0]-PA[0]]])
-
-    Ke = 0.5*B.transpose()*B/np.linalg.det(G)
-
-    ### Matrices
-    for i in range(3):
-        I = tri[i]
+        # Puntos de los triangulos
+        PA = vertices[tri[0],:2] 
+        PB = vertices[tri[1],:2]
+        PC = vertices[tri[2],:2]
         
-        for j in range(3):
-            J = tri[j]
-            
-            if I == J:
-                dataM.append(Me[i,j])
-                rowM.append(I)
-                colM.append(J)
-                
-            dataK.append(Ke[i,j])
-            rowK.append(I)
-            colK.append(J)
+        lado_min = min(np.array([np.linalg.norm(PB - PA), np.linalg.norm(PC - PA), np.linalg.norm(PC - PB)]))
+        
+        if lado_min<dh:
+            dh = lado_min
+        
+        # Matriz dde masa elemental
+        Ae = (1/2)*np.cross(PB - PA, PC - PA)
+        Aes.append(Ae)
+        Me = (Ae/6)*np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        
+        #Matriz de rigidez
+        G = np.matrix([PB-PA,PC-PA]).transpose()
+        
+        B = np.matrix([[PB[1]-PC[1], PC[1]-PA[1], PA[1]-PB[1]],
+                    [PC[0]-PB[0], PA[0]-PC[0], PB[0]-PA[0]]])
 
-K = csr_matrix((dataK, (rowK, colK)))
-M = csr_matrix((dataM, (rowM, colM)))
+        Ke = 0.5*B.transpose()*B/np.linalg.det(G)
+
+        ### Matrices
+        for i in range(3):
+            I = tri[i]
+            
+            for j in range(3):
+                J = tri[j]
+                
+                if I == J:
+                    dataM.append(Me[i,j])
+                    rowM.append(I)
+                    colM.append(J)
+                    
+                dataK.append(Ke[i,j])
+                rowK.append(I)
+                colK.append(J)
+    K = csr_matrix((dataK, (rowK, colK)))
+    M = csr_matrix((dataM, (rowM, colM)))
+    save_npz(f'{Mr}.npz',K)
+    save_npz(f'{Ma}.npz',M)
+    np.save(f"{d_h}", dh)
+    print('No ne leyó correctamente\n')
+
 
 M_diag = M.diagonal()
 
-Di = 1.5E6
-Ds = 1E6
-beta = 0.9
-gamma = 0.2
+Di = 6.5E7
+Ds = 1E2
+beta = 10000
+gamma = 0
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
 
@@ -86,17 +98,17 @@ dt = np.min(dt_cri)
 print('dh: ', dh)
 print('dt: ', dt)
 
-dt = 0.002
+dt = 0.00011
 
-T = 3
+T = 20
 Nt = int(T/dt)
 t_save = np.round(7/dt)
 
 with open("municipios.json", 'r') as openfile:
     towns_data = json.load(openfile)
 
-towns = ["Entrerrios"] ### Lista de municipios que har´an parte de los suceptibles
-i_towns = ["Entrerrios"] ### Lista de municipios que har´an parte de los infectados
+towns = ["Olaya","Uramita","Peque","Ituango","Taraza","Nechi","Yondo","Sonson","Urrao"] ### Lista de municipios que har´an parte de los suceptibles
+i_towns = ["Medellin","Bello", "Envigado", "Caldas"] ### Lista de municipios que har´an parte de los infectados
 ### El array points corresponde a los puntos de la malla ya creada
 Sn, In = initialConditions.create_initial_conditions(towns, i_towns, vertices, towns_data, 1, alpha=0.6)
 
