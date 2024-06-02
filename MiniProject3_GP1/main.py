@@ -5,9 +5,30 @@ import pyvista as pv
 from modules import initialConditions
 import json
 import matplotlib.pyplot as plt
+from modules import anyMesh, appendLevels, plotter
 
-### Se carga la malla
-malla = meshio.read("MiniProject3_GP1\data\meshes\AntioquiaConNiveles.vtk")
+try: 
+    print('Inicia la lectura\n')
+    malla = meshio.read("MiniProject3_GP1\data\meshes\Antioquia.msh")
+    print('Se leyó correctamente\n')
+except:
+    print('El archivo no estaba creado \n')
+    file = "MiniProject3_GP1/data/meshes/mapa_antioquia.npy"
+    tm = 1e3                        #tamaño promedio del elemento
+    name = 'Antioquia'
+    polys = anyMesh.anymesh2D(file, tm, name)
+    print('Archivo creado \n')
+    malla = meshio.read("MiniProject3_GP1\data\meshes\Antioquia.msh")
+    
+try: 
+    print('Inicia la lectura\n')
+    malla = meshio.read("MiniProject3_GP1\data\meshes\AntioquiaConNiveles.vtk")
+    print('Se leyó correctamente\n')
+except:
+    print('El archivo no estaba creado \n')
+    appendLevels.append_levels_to_mesh()
+    print('Archivo creado \n')
+    malla = meshio.read("MiniProject3_GP1\data\meshes\AntioquiaConNiveles.vtk")
 
 vertices = malla.points
 num_vertices = len(vertices)
@@ -102,9 +123,9 @@ print('dt: ', dt)
 dt = 0.006
 
 T = 7*2
-Nt = int(T/dt)
+Nt = int(np.round(T/dt))
 dT = 7
-t_save = np.round(dT/dt)
+t_save = int(np.round(dT/dt))
 
 with open("MiniProject3_GP1/data/municipios.json", 'r') as openfile:
     towns_data = json.load(openfile)
@@ -152,38 +173,14 @@ for i in enumerate(dt_span, 1):
         
         malla.point_data[f'Infectados_dia_{int(i[0]*(dt))}'] = In
         malla.point_data[f'Susceptibles_dia_{int(i[0]*(dt))}'] = Sn
-    
-    """if i[0]%(len(dt_span))==0:
-        Is.append(In)
-        Ss.append(Sn)"""
         
 print(len(Is))
 
 malla.point_data['Infectados_Inicial'] = Is[0]
 malla.point_data['Infectados_Final'] = Is[-1]
 
-plotter = pv.Plotter(shape=(1, 2))
-
-plotter.subplot(0, 0)
-plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Inicial')
-
-plotter.subplot(0, 1)
-plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_Final')
-
-plotter.show()
-
 malla.point_data['Susceptibles_Inicial'] = Ss[0]
 malla.point_data['Susceptibles_Final'] = Ss[-1]
-
-plotter = pv.Plotter(shape=(1, 2))
-
-plotter.subplot(0, 0)
-plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Inicial')
-
-plotter.subplot(0, 1)
-plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Final')
-
-plotter.show()
 
 meshio.write('MiniProject3_GP1/data/meshes/VirusT2_Antioquia.vtk', malla)
 
@@ -217,10 +214,5 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
 np.save("MiniProject3_GP1/data/variables/Infectados_instantes", InfT)
 np.save("MiniProject3_GP1/data/variables/Susceptibles_instantes", SusT)
 
-t_spanP = np.linspace(0, 13, 14)
-
-plt.plot(t_spanP, InfT, label='Infectados')
-plt.plot(t_spanP, SusT, label='Susceptibles')
-plt.legend()
-
-plt.show()
+dia = 1*dT
+plotter.plotter_analysis(int(T/dT)+1, T, dia, dT)

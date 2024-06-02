@@ -45,4 +45,11 @@ def append_levels_to_mesh():
     plotter.show()
     
 if __name__ == "__main__":
-    append_levels_to_mesh()
+    try: 
+        print('Inicia la lectura\n')
+        malla = meshio.read("MiniProject3_GP1\data\meshes\AntioquiaConNiveles.vtk")
+        print('Se leyó correctamente\n')
+    except:
+        print('El archivo no estaba creado \n')
+        append_levels_to_mesh()
+        print('Archivo creado \n')

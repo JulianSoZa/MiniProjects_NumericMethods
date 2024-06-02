@@ -35,7 +35,14 @@ def anymesh2D(file, tm, name):
     return polys  
 
 if __name__ == "__main__":
-    file = "MiniProject3_GP1/data/meshes/mapa_antioquia.npy"
-    tm = 1e3                        #tamaño promedio del elemento
-    name = 'Antioquia'
-    polys = anymesh2D(file, tm, name)
+    try: 
+        print('Inicia la lectura\n')
+        malla = meshio.read("MiniProject3_GP1\data\meshes\Antioquia.msh")
+        print('Se leyó correctamente\n')
+    except:
+        print('El archivo no estaba creado \n')
+        file = "MiniProject3_GP1/data/meshes/mapa_antioquia.npy"
+        tm = 1e3                        #tamaño promedio del elemento
+        name = 'Antioquia'
+        polys = anymesh2D(file, tm, name)
+        print('Archivo creado \n')
