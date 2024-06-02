@@ -39,5 +39,3 @@ if __name__ == "__main__":
     tm = 1e3                        #tamaño promedio del elemento
     name = 'Antioquia'
     polys = anymesh2D(file, tm, name)
-    
-    print(polys.shape)

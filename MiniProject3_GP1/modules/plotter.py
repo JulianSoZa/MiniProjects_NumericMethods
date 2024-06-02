@@ -10,10 +10,10 @@ def plotter_analysis():
     plotter = pv.Plotter(shape=(1, 2))
 
     plotter.subplot(0, 0)
-    plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_dia_357')
+    plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Infectados_dia_14')
 
     plotter.subplot(0, 1)
-    plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_dia_357')
+    plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_dia_14')
 
     plotter.show()
 
@@ -54,7 +54,7 @@ def plotter_analysis():
     np.save("Infectados_instantes", InfT)
     np.save("Susceptibles_instantes", SusT)"""
 
-    t_span = np.linspace(0, 51, 52)
+    t_span = np.linspace(0, 2, 3)
 
     plt.plot(t_span, InfT, label='Infectados')
     plt.plot(t_span, SusT, label='Susceptibles')
@@ -67,7 +67,7 @@ def plotter_analysis():
     plotter.view_xy()
     plotter.open_gif('MiniProject3_GP1/data/gifs/Infectados.gif')
     print(dir(plotter))
-    for i in range(52):
+    for i in range(3):
         I = malla.point_data[f'Infectados_dia_{int(i*7)}']
         Imin = np.min(I)
         Imax = np.max(I)
@@ -85,7 +85,7 @@ def plotter_analysis():
     plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Final')
     plotter.view_xy()
     plotter.open_gif('MiniProject3_GP1/data/gifs/Susceptibles.gif')
-    for i in range(52):
+    for i in range(3):
         S = malla.point_data[f'Susceptibles_dia_{int(i*7)}']
         Smin = np.min(S)
         Smax = np.max(S)

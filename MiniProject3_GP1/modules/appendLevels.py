@@ -12,8 +12,7 @@ import pyvista as pv
 def append_levels_to_mesh():
     name = 'Antioquia'
     mesh = meshio.read(f"MiniProject3_GP1/data/meshes/{name}.msh")
-    niveles = np.load('niveles.npy')
-
+    niveles = np.load('MiniProject3_GP1/data/meshes/niveles.npy')
 
     vertices = mesh.points
     num_vertices = len(vertices)

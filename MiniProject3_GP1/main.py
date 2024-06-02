@@ -101,7 +101,7 @@ print('dt: ', dt)
 
 dt = 0.006
 
-T = 7*51
+T = 7*2
 Nt = int(T/dt)
 dT = 7
 t_save = np.round(dT/dt)
@@ -217,7 +217,7 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
 np.save("MiniProject3_GP1/data/variables/Infectados_instantes", InfT)
 np.save("MiniProject3_GP1/data/variables/Susceptibles_instantes", SusT)
 
-t_spanP = np.linspace(0, 51, 52)
+t_spanP = np.linspace(0, 13, 14)
 
 plt.plot(t_spanP, InfT, label='Infectados')
 plt.plot(t_spanP, SusT, label='Susceptibles')
