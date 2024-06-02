@@ -110,7 +110,7 @@ M_diag = M.diagonal()
 
 Di = 0.6E6
 Ds = 0.5E6
-beta = 10
+beta = 1
 gamma = 0.0002
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
@@ -122,7 +122,10 @@ print('dt: ', dt)
 
 dt = 0.006
 
-T = 7*9            #Se recomienda que debe ser tal que el cociente T/dt tenga residuo 0
+T = 7*3            
+#Se recomienda que debe ser tal que el cociente T/dt tenga residuo 0
+# Para un dt de 0.006, T debe ser multiplo de 3 para un residuo de 0
+
 Nt = int(np.ceil(T/dt) + 1/dt)
 dT = 7
 t_save = int(np.round(dT/dt))
@@ -140,15 +143,18 @@ towns = ['Guarne', 'Anza', 'Concordia', 'Heliconia', 'Girardota', 'Sabaneta', "E
 i_towns = ["Medellin", 'Concepcion', 'Salgar', 'Armenia', 'Granada', 'Marinilla', 'Olaya', 'Gomez Plata', 'Santa Fe De Antioquia'] ### Lista de municipios que har´an parte de los infectados
 ### El array points corresponde a los puntos de la malla ya creada
 Sn, In = initialConditions.create_initial_conditions(towns, i_towns, vertices, towns_data, 1, alpha=0.6)
+Rn = np.zeros(len(Sn))
 
 malla.point_data[f'Infectados_dia_0'] = In
 malla.point_data[f'Susceptibles_dia_0'] = Sn
 
 Is = []
 Ss = []
+Rs = []
 
 Is.append(In)
 Ss.append(Sn)
+Rs.append(Rn)
 
 Smax = np.max(Sn)
 
@@ -158,9 +164,11 @@ dt_span = np.repeat(dt, Nt+2)
 for i in enumerate(dt_span, 1):
     bI = M*In + i[1]*(-Di*K*In + beta*M*Sn*In - gamma*M*In)
     bS = M*Sn + i[1]*(-Ds*K*Sn - beta*M*Sn*In)
+    bR = M*Rn + i[1]*gamma*M*In
     
     In = bI/M_diag
     Sn = bS/M_diag
+    Rn = bR/M_diag
     
     if np.max(Sn)>Smax:
         print('Posible inestabilidad')
@@ -168,6 +176,7 @@ for i in enumerate(dt_span, 1):
     if (i[0]%t_save)==0:
         Is.append(In)
         Ss.append(Sn)
+        Rs.append(Rn)
         
         print(f'Semana {int(i[0]*(dt)/7)} - Dia {int(i[0]*(dt))}')
         
@@ -188,7 +197,7 @@ InfT = []
 SusT = []
 MueT = []
 
-for i, j in zip(range(len(Is)), range(len(Ss))):
+for i, j, k in zip(range(len(Is)), range(len(Ss)), range(len(Rs))):
     infectados = 0
     susceptibles = 0
     muertos = 0
@@ -207,14 +216,23 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
         
         susceptibles += (1/3)*(S_PA + S_PB + S_PC)*Aes[tri[0]]
         
+        R_PA = Rs[k][tri[1][0]] 
+        R_PB = Rs[k][tri[1][1]]
+        R_PC = Rs[k][tri[1][2]]
+        
+        muertos += (1/3)*(R_PA + R_PB + R_PC)*Aes[tri[0]]
+        
     InfT.append(infectados)
     SusT.append(susceptibles)
-    MueT.append(InfT[0]-infectados)
+    MueT.append(muertos)
     
     print('Infectados: ', infectados)
+    print('Muertos: ', muertos)
     print('susceptibles: ', susceptibles)
+    print('\n')
     
 np.save("MiniProject3_GP1/data/variables/Infectados_instantes", InfT)
+np.save("MiniProject3_GP1/data/variables/Muertos_instantes", MueT)
 np.save("MiniProject3_GP1/data/variables/Susceptibles_instantes", SusT)
 
 t_span = np.linspace(0, T, len(Is))

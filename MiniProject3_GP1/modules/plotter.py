@@ -29,8 +29,10 @@ def plotter_analysis(t_span, dia, dias):
 
     InfT = np.load('MiniProject3_GP1/data/variables/infectados_instantes.npy')
     SusT = np.load('MiniProject3_GP1/data/variables/Susceptibles_instantes.npy')
+    MueT = np.load('MiniProject3_GP1/data/variables/Muertos_instantes.npy')
 
     plt.plot(t_span, InfT, label='Infectados')
+    plt.plot(t_span, MueT, label='Muertos')
     plt.plot(t_span, SusT, label='Susceptibles')
     plt.legend()
 
