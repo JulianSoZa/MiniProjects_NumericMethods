@@ -111,7 +111,7 @@ M_diag = M.diagonal()
 Di = 0.6E6
 Ds = 0.5E6
 beta = 10
-gamma = 0.002
+gamma = 0.0002
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
 
@@ -122,8 +122,8 @@ print('dt: ', dt)
 
 dt = 0.006
 
-T = 7*2
-Nt = int(np.round(T/dt))
+T = 7*9            #Se recomienda que debe ser tal que el cociente T/dt tenga residuo 0
+Nt = int(np.ceil(T/dt) + 1/dt)
 dT = 7
 t_save = int(np.round(dT/dt))
 
@@ -152,7 +152,7 @@ Ss.append(Sn)
 
 Smax = np.max(Sn)
 
-dt_span = np.repeat(dt, Nt+1)
+dt_span = np.repeat(dt, Nt+2)
 #dt_span = np.concatenate((dt_span, np.repeat(dt*1.2, 7/(dt*1.2))))
 
 for i in enumerate(dt_span, 1):
@@ -186,10 +186,12 @@ meshio.write('MiniProject3_GP1/data/meshes/VirusT2_Antioquia.vtk', malla)
 
 InfT = []
 SusT = []
+MueT = []
 
 for i, j in zip(range(len(Is)), range(len(Ss))):
     infectados = 0
     susceptibles = 0
+    muertos = 0
 
     for tri in enumerate(triangles):
 
@@ -207,6 +209,7 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
         
     InfT.append(infectados)
     SusT.append(susceptibles)
+    MueT.append(InfT[0]-infectados)
     
     print('Infectados: ', infectados)
     print('susceptibles: ', susceptibles)
@@ -214,5 +217,12 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
 np.save("MiniProject3_GP1/data/variables/Infectados_instantes", InfT)
 np.save("MiniProject3_GP1/data/variables/Susceptibles_instantes", SusT)
 
-dia = 1*dT
-plotter.plotter_analysis(int(T/dT)+1, T, dia, dT)
+t_span = np.linspace(0, T, len(Is))
+        
+dia = '0'
+
+dias = np.array([0])
+dias = np.append(dias, np.linspace(dT, T, len(Is)-1))
+print(dias)
+
+plotter.plotter_analysis(t_span, dia, dias)
