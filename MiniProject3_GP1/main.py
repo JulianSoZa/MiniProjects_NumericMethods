@@ -6,12 +6,12 @@ from modules import initialConditions
 import json
 
 ### Se carga la malla
-mesh = meshio.read("AntioquiaConNiveles.vtk")
+malla = meshio.read("AntioquiaConNiveles.vtk")
 
-vertices = mesh.points
+vertices = malla.points
 num_vertices = len(vertices)
 
-triangles = mesh.cells_dict['triangle']
+triangles = malla.cells_dict['triangle']
 
 Ma = 'Matriz_de_masa'
 Mr = 'Matriz_de_Rigidez'
@@ -102,7 +102,8 @@ dt = 0.006
 
 T = 7
 Nt = int(T/dt)
-t_save = np.round(7/dt)
+dT = 7
+t_save = np.round(dT/dt)
 
 with open("municipios.json", 'r') as openfile:
     towns_data = json.load(openfile)
@@ -112,6 +113,9 @@ i_towns = ["Medellin","Bello", "Envigado", "Caldas"] ### Lista de municipios que
 ### El array points corresponde a los puntos de la malla ya creada
 Sn, In = initialConditions.create_initial_conditions(towns, i_towns, vertices, towns_data, 1, alpha=0.6)
 
+malla.point_data[f'Infectados_dia_0'] = In
+malla.point_data[f'Susceptibles_dia_0'] = Sn
+
 Is = []
 Ss = []
 
@@ -120,7 +124,7 @@ Ss.append(Sn)
 
 Smax = np.max(Sn)
 
-dt_span = np.repeat(dt, Nt)
+dt_span = np.repeat(dt, Nt+1)
 #dt_span = np.concatenate((dt_span, np.repeat(dt*1.2, 7/(dt*1.2))))
 
 for i in enumerate(dt_span, 1):
@@ -133,17 +137,18 @@ for i in enumerate(dt_span, 1):
     if np.max(Sn)>Smax:
         print('Posible inestabilidad')
     
-    """if i%t_save==0:
-        Is.append(In)
-        Ss.append(Sn)"""
-    
-    if i[0]%(len(dt_span))==0:
+    if (i[0]%t_save)==0:
         Is.append(In)
         Ss.append(Sn)
         
+        malla.point_data[f'Infectados_dia_{int(i[0]*(dt))}'] = In
+        malla.point_data[f'Susceptibles_dia_{int(i[0]*(dt))}'] = Sn
+    
+    """if i[0]%(len(dt_span))==0:
+        Is.append(In)
+        Ss.append(Sn)"""
+        
 print(len(Is))
-
-malla = meshio.read("AntioquiaConNiveles.vtk")
 
 malla.point_data['Infectados_Inicial'] = Is[0]
 malla.point_data['Infectados_Final'] = Is[-1]
@@ -171,6 +176,11 @@ plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Fina
 
 plotter.show()
 
+meshio.write('VirusT2_Antioquia.vtk', malla)
+
+InfT = []
+SusT = []
+
 for i, j in zip(range(len(Is)), range(len(Ss))):
     infectados = 0
     susceptibles = 0
@@ -189,5 +199,11 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
         
         susceptibles += (1/3)*(S_PA + S_PB + S_PC)*Aes[tri[0]]
         
+    InfT.append(infectados)
+    SusT.append(susceptibles)
+    
     print('Infectados: ', infectados)
     print('susceptibles: ', susceptibles)
+    
+np.save("Infectados_instantes", InfT)
+np.save("Susceptibles_instantes", SusT)
