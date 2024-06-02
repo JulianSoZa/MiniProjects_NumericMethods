@@ -122,7 +122,7 @@ print('dt: ', dt)
 
 dt = 0.006
 
-T = 7*3            
+T = 7*21            
 #Se recomienda que debe ser tal que el cociente T/dt tenga residuo 0
 # Para un dt de 0.006, T debe ser multiplo de 3 para un residuo de 0
 
@@ -183,7 +183,7 @@ for i in enumerate(dt_span, 1):
         malla.point_data[f'Infectados_dia_{int(i[0]*(dt))}'] = In
         malla.point_data[f'Susceptibles_dia_{int(i[0]*(dt))}'] = Sn
         
-print(len(Is))
+print('Instantes almacenados: ', len(Is))
 
 malla.point_data['Infectados_Inicial'] = Is[0]
 malla.point_data['Infectados_Final'] = Is[-1]
