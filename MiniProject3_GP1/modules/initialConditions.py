@@ -1,16 +1,13 @@
-# Import modules:
 import meshio
 import gmsh
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
-
 import pyvista as pv
+import json
 
-   
 def create_initial_conditions(towns, i_towns, points, towns_data, a =1, alpha = 0.8):
     
     num_points = len(points)
@@ -43,11 +40,13 @@ def create_initial_conditions(towns, i_towns, points, towns_data, a =1, alpha = 
     
     return S_vec, I_vec
         
-"""if __name__ == "__main__":
-    import json
-    with open("datos_proyecto/municipios.json", 'r') as openfile:
+if __name__ == "__main__":
+    malla = meshio.read("/MiniProject3_GP1/data/meshes/AntioquiaConNiveles.vtk")
+    points = malla.points
+
+    with open("/MiniProject3_GP1/data/municipios.json", 'r') as openfile:
         towns_data = json.load(openfile)
     towns = [...] ### Lista de municipios que har´an parte de los suceptibles
     i_towns = [...] ### Lista de municipios que har´an parte de los infectados
     ### El array points corresponde a los puntos de la malla ya creada
-    S0, I0 = create_initial_conditions(towns, i_towns, points, towns_data, 1, alpha=0.99)"""
+    S0, I0 = create_initial_conditions(towns, i_towns, points, towns_data, 1, alpha=0.99)

@@ -4,9 +4,10 @@ from scipy.sparse import csr_matrix, save_npz, load_npz
 import pyvista as pv
 from modules import initialConditions
 import json
+import matplotlib.pyplot as plt
 
 ### Se carga la malla
-malla = meshio.read("AntioquiaConNiveles.vtk")
+malla = meshio.read("MiniProject3_GP1\data\meshes\AntioquiaConNiveles.vtk")
 
 vertices = malla.points
 num_vertices = len(vertices)
@@ -20,10 +21,10 @@ A_es = 'Aes'
 
 try: 
     print('Inicia la lectura\n')
-    M = load_npz(f"{Ma}.npz")
-    K = load_npz(f"{Mr}.npz")
-    dh = np.load(f"{d_h}.npy")
-    Aes = np.load(f"{A_es}.npy")
+    M = load_npz(f"MiniProject3_GP1/data/variables/{Ma}.npz")
+    K = load_npz(f"MiniProject3_GP1/data/variables/{Mr}.npz")
+    dh = np.load(f"MiniProject3_GP1/data/variables/{d_h}.npy")
+    Aes = np.load(f"MiniProject3_GP1/data/variables/{A_es}.npy")
     print('Se leyó correctamente\n')
 except:
     dh = np.inf
@@ -78,18 +79,18 @@ except:
                 colK.append(J)
     K = csr_matrix((dataK, (rowK, colK)))
     M = csr_matrix((dataM, (rowM, colM)))
-    save_npz(f'{Mr}.npz',K)
-    save_npz(f'{Ma}.npz',M)
-    np.save(f"{d_h}", dh)
-    np.save(f"{A_es}", Aes)
+    save_npz(f'MiniProject3_GP1/data/variables/{Mr}.npz',K)
+    save_npz(f'MiniProject3_GP1/data/variables/{Ma}.npz',M)
+    np.save(f"MiniProject3_GP1/data/variables/{d_h}", dh)
+    np.save(f"MiniProject3_GP1/data/variables/{A_es}", Aes)
     print('Se almacenaron las variables')
 
 M_diag = M.diagonal()
 
 Di = 0.6E6
 Ds = 0.5E6
-beta = 1440
-gamma = 0.02
+beta = 10
+gamma = 0.002
 
 dt_cri = [2*(dh**2)/(4*Di+1.5*gamma*dh), (dh**2)/(2*Ds)]
 
@@ -100,16 +101,22 @@ print('dt: ', dt)
 
 dt = 0.006
 
-T = 7
+T = 7*51
 Nt = int(T/dt)
 dT = 7
 t_save = np.round(dT/dt)
 
-with open("municipios.json", 'r') as openfile:
+with open("MiniProject3_GP1/data/municipios.json", 'r') as openfile:
     towns_data = json.load(openfile)
 
-towns = ["Olaya","Uramita","Peque","Ituango","Taraza","Nechi","Yondo","Sonson","Urrao"] ### Lista de municipios que har´an parte de los suceptibles
-i_towns = ["Medellin","Bello", "Envigado", "Caldas"] ### Lista de municipios que har´an parte de los infectados
+towns = ['Guarne', 'Anza', 'Concordia', 'Heliconia', 'Girardota', 'Sabaneta', "Envigado", "Caldas", 
+         "Bello", 'Entrerrios', 'Sopetran', 'Rionegro', 'San Roque', 'Don Matias', 'Barbosa', 'Cocorna',
+         'Liborina', 'Belmira', 'Caicedo', 'Urrao', 'Guadalupe', 'Buritica', 'Giraldo', 'Abriaqui', 'Ebejico',
+         'San Pedro De Los Milagros', 'Betulia', 'Titiribi', 'El Penol', 'Guatape', 'San Carlos', 'San Luis',
+         'Yolombo', 'San Vicente', 'Itagui', 'Apartado', 'Turbo', 'Caucasia', 'Chigorodo', 'Copacabana', 
+         'La Estrella', 'Necocli', 'La Ceja', 'Carepa', 'El Bagre', 'Puerto Berrio', 'Yarumal'] ### Lista de municipios que har´an parte de los suceptibles
+
+i_towns = ["Medellin", 'Concepcion', 'Salgar', 'Armenia', 'Granada', 'Marinilla', 'Olaya', 'Gomez Plata', 'Santa Fe De Antioquia'] ### Lista de municipios que har´an parte de los infectados
 ### El array points corresponde a los puntos de la malla ya creada
 Sn, In = initialConditions.create_initial_conditions(towns, i_towns, vertices, towns_data, 1, alpha=0.6)
 
@@ -140,6 +147,8 @@ for i in enumerate(dt_span, 1):
     if (i[0]%t_save)==0:
         Is.append(In)
         Ss.append(Sn)
+        
+        print(f'Semana {int(i[0]*(dt)/7)} - Dia {int(i[0]*(dt))}')
         
         malla.point_data[f'Infectados_dia_{int(i[0]*(dt))}'] = In
         malla.point_data[f'Susceptibles_dia_{int(i[0]*(dt))}'] = Sn
@@ -176,7 +185,7 @@ plotter.add_mesh(malla, show_edges=False, cmap='jet', scalars='Susceptibles_Fina
 
 plotter.show()
 
-meshio.write('VirusT2_Antioquia.vtk', malla)
+meshio.write('MiniProject3_GP1/data/meshes/VirusT2_Antioquia.vtk', malla)
 
 InfT = []
 SusT = []
@@ -205,5 +214,13 @@ for i, j in zip(range(len(Is)), range(len(Ss))):
     print('Infectados: ', infectados)
     print('susceptibles: ', susceptibles)
     
-np.save("Infectados_instantes", InfT)
-np.save("Susceptibles_instantes", SusT)
+np.save("MiniProject3_GP1/data/variables/Infectados_instantes", InfT)
+np.save("MiniProject3_GP1/data/variables/Susceptibles_instantes", SusT)
+
+t_spanP = np.linspace(0, 51, 52)
+
+plt.plot(t_spanP, InfT, label='Infectados')
+plt.plot(t_spanP, SusT, label='Susceptibles')
+plt.legend()
+
+plt.show()
